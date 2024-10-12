@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout-dashboard :: head"><title>User Dash</title></head>
+
+<body th:replace="layout-dashboard :: body">
+
+<div th:fragment="main" class="">
+
+    <div class="border-end bg-white" id="sidebar-wrapper">
+        <div class="sidebar-heading border-bottom bg-light">DashBoard</div>
+        <div class="list-group list-group-flush h-100">
+            <div th:each="link : ${sideNavLinks}">
+                <a class="list-group-item list-group-item-action list-group-item-light p-3" th:href="@{${link.getUrl()}}" th:text="${link.getLabel()}"></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="main">
+        <h1>Welcome to the User Dashboard</h1>
+        <p>This is the content of the user dashboard.</p>
+    </div>
+
+</div>
+
+</body>
+</html>

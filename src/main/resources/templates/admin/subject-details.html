@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout-dashboard :: head"><title>Admin Dashboard</title></head>
+
+<body th:replace="layout-dashboard :: body">
+
+<div th:fragment="main" class="d-flex">
+    <div class="border-end bg-white" id="sidebar-wrapper">
+        <div class="sidebar-heading border-bottom bg-light">Admin DashBoard</div>
+        <div class="list-group list-group-flush h-100">
+            <div th:each="link : ${sideNavLinks}">
+                <a class="list-group-item list-group-item-action list-group-item-light p-3" th:href="@{${link.getUrl()}}" th:text="${link.getLabel()}"></a>
+            </div>
+            <form th:action="@{/auth/logout}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button class="list-group-item list-group-item-action list-group-item-light p-3" type="submit">Logout</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="main container-fluid">
+        <h1 th:text="${subject.subjectName}">Subject Name</h1>
+
+        <!-- Add more details as needed -->
+        <p>Number of Classes: <span th:text="${subject.getNumberOfStudents()}"></span></p>
+        <p>Teacher: <span th:text="${subject.teacher.name}"></span></p>
+
+        <!-- Back to subject list -->
+        <a href="/admin/subjects">Back to Subjects List</a>
+    </div>
+
+</div>
+
+</body>
+</html>

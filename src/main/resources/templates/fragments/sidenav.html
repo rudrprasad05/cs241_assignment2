@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!--<div class="sidenav" th:fragment="sidenav">-->
+<!--    <a href="/user/dashboard">Dashboard</a>-->
+<!--    <a href="/user/classes">Dashboard</a>-->
+<!--    <a href="/user/profile">Profile</a>-->
+<!--    <form th:action="@{/auth/logout}" method="post">-->
+<!--        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />-->
+<!--        <button type="submit">Logout</button>-->
+<!--    </form>-->
+<!--</div>-->
+
+<div class="sidenav">
+    <ul>
+        <!--/*@thymesVar id="sideNavLinks" type="com.assignment3.cs241.Group6.config.Link"*/-->
+        <li th:each="link : ${sideNavLinks}">
+            <a th:href="@{${link.url}}" th:text="${link.label}"></a>
+        </li>
+    </ul>
+</div>
+</body>
+</html>
