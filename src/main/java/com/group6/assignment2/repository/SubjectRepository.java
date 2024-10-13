@@ -19,4 +19,5 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
     @Query("SELECT s FROM Subject s WHERE s.code = :code")
     Subject findByCode(@Param("code") String code);
 
+
 }

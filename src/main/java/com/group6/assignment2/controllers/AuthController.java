@@ -3,6 +3,8 @@ package com.group6.assignment2.controllers;
 import com.group6.assignment2.entity.Student;
 import com.group6.assignment2.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +26,22 @@ public class AuthController {
 
     @GetMapping("/auth/login")
     public String showLoginPage() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && !(authentication.getPrincipal() instanceof String)) {
+            // Redirect to appropriate dashboard based on role
+            String role = authentication.getAuthorities().iterator().next().getAuthority();
+            switch (role) {
+                case "ROLE_ADMIN":
+                    return "redirect:/admin/dashboard";
+                case "ROLE_STUDENT":
+                    return "redirect:/student/dashboard";
+                case "ROLE_TEACHER":
+                    return "redirect:/teacher/dashboard";
+                // Add more roles if necessary
+                default:
+                    return "/";
+            }
+        }
         return "auth/login";
     }
 

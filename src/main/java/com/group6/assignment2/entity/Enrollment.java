@@ -27,6 +27,14 @@ public class Enrollment {
     @JoinColumn(name = "subject_class_id", nullable = false)  // Foreign key to SubjectClass
     private SubjectClass subjectClass;
 
+    public Enrollment() {}
+    public  Enrollment(Student student, SubjectClass subjectClass) {
+        this.createdAt = LocalDateTime.now();
+        this.isAccepted = false;
+        this.student = student;
+        this.subjectClass = subjectClass;
+    }
+
     public Long getId() {
         return id;
     }

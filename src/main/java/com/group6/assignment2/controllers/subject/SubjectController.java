@@ -4,10 +4,13 @@ import com.group6.assignment2.config.Link;
 import com.group6.assignment2.entity.Subject;
 import com.group6.assignment2.entity.SubjectClass;
 import com.group6.assignment2.entity.Teacher;
+import com.group6.assignment2.entity.User;
 import com.group6.assignment2.repository.SubjectClassRepository;
 import com.group6.assignment2.repository.SubjectRepository;
 import com.group6.assignment2.repository.TeacherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +27,8 @@ import java.util.List;
 public class SubjectController {
     @Autowired
     private TeacherRepository teacherRepository;
+    @Autowired
+    private TeacherRepository userRepository;
     @Autowired
     private SubjectRepository subjectRepository;
     @Autowired

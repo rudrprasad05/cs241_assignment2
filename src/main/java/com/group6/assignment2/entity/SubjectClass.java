@@ -72,4 +72,12 @@ public class SubjectClass {
     public void setRoomCode(String roomCode) {
         this.roomCode = roomCode;
     }
+
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
 }
