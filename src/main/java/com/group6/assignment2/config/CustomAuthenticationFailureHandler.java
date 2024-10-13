@@ -15,7 +15,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         String errorMessage = "Invalid username or password";
-
+        System.out.println("Login failed: " + exception.getMessage());
         if (exception.getMessage().equalsIgnoreCase("User not found")) {
             errorMessage = "Email address not in use";
         } else if (exception.getMessage().equalsIgnoreCase("Bad credentials")) {
@@ -27,7 +27,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         request.getSession().setAttribute("toastClass", "bg-danger");
 
         // Redirect to the login page with the error message as a query parameter
-        response.sendRedirect("/login?error=" + errorMessage);
+        response.sendRedirect("/auth/login?error=" + errorMessage);
     }
 
 }

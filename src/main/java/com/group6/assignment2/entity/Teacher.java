@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
+@DiscriminatorValue("TEACHER")
+
 public class Teacher extends User {
 
     @Column(nullable = false)
@@ -21,7 +23,7 @@ public class Teacher extends User {
     public Teacher() {}
 
     public Teacher(String username, String email, String password, String fName, String lName) {
-        super(username, email, password, fName, lName);
+        super(username, email, password, fName, lName, Role.TEACHER);
         this.teacherId = username;
     }
 

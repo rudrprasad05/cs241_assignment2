@@ -3,6 +3,8 @@ package com.group6.assignment2.entity;
 import jakarta.persistence.*;
 
 @Entity
+@DiscriminatorValue("PARENT")
+
 public class Parent extends User {
     @Column(nullable = false)
     private String parentId;

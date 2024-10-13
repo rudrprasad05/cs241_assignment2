@@ -2,7 +2,9 @@ package com.group6.assignment2.controllers.subject;
 
 import com.group6.assignment2.config.Link;
 import com.group6.assignment2.entity.Subject;
+import com.group6.assignment2.entity.SubjectClass;
 import com.group6.assignment2.entity.Teacher;
+import com.group6.assignment2.repository.SubjectClassRepository;
 import com.group6.assignment2.repository.SubjectRepository;
 import com.group6.assignment2.repository.TeacherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,8 @@ public class SubjectController {
     private TeacherRepository teacherRepository;
     @Autowired
     private SubjectRepository subjectRepository;
+    @Autowired
+    private SubjectClassRepository subjectClassRepository;
 
     static List<Link> sideNavLinks = new ArrayList<>();
 
@@ -41,10 +45,18 @@ public class SubjectController {
         return "admin/subjects";
     }
 
-    @GetMapping("/admin/subjects/{subject_name}")
-    public String viewSubjectDetails(@PathVariable("subject_name") String subjectName, Model model) {
+
+    @GetMapping("/admin/subject/add")
+    public String addSubjectModal(Model model) {
+        return "modals/addSubjectModal";
+    }
+
+
+    @GetMapping("/admin/subjects/{subject_code}")
+    public String viewSubjectDetails(@PathVariable("subject_code") String subject_code, Model model) {
         // Fetch subject by subject_name from the database
-        Subject subject = subjectRepository.findByName(subjectName);
+        Subject subject = subjectRepository.findByCode(subject_code);
+        List<SubjectClass> subjectClass = subjectClassRepository.findBySubjectCode(subject_code);
 
         // Check if subject exists
         if (subject == null) {
@@ -55,6 +67,7 @@ public class SubjectController {
         addLinks();
         model.addAttribute("sideNavLinks", sideNavLinks);
         model.addAttribute("subject", subject);
+        model.addAttribute("subjectClass", subjectClass);
 
         return "admin/subject-details";
     }
@@ -74,6 +87,6 @@ public class SubjectController {
     public static void addLinks() {
         sideNavLinks.clear();
         sideNavLinks.add(new Link("/admin/subjects", "Subjects"));
-        sideNavLinks.add(new Link("/admin/invite-teachers", "Invite Teacher"));
+        sideNavLinks.add(new Link("/admin/invite-teacher", "Invite Teacher"));
     }
 }

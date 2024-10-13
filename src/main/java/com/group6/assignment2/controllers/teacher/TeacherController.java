@@ -1,5 +1,6 @@
 package com.group6.assignment2.controllers.teacher;
 
+import com.group6.assignment2.config.Link;
 import com.group6.assignment2.entity.Subject;
 import com.group6.assignment2.entity.Teacher;
 import com.group6.assignment2.repository.InviteLinkRepository;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -35,14 +37,20 @@ public class TeacherController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    static List<Link> sideNavLinks = new ArrayList<>();
+
+
     @GetMapping("/teacher/dashboard")
     public String userDashboard(Model model) {
-        model.addAttribute("message", "Welcome to the User Dashboard");
 
         Teacher teacher = getLoggedTeacher();  // Implement method to get logged-in teacher
         assert teacher != null;
         List<Subject> subjects = teacher.getSubjects();
         model.addAttribute("subjects", subjects);
+
+        addLinks();
+        model.addAttribute("sideNavLinks", sideNavLinks);
+
 
         return "teacher/dashboard";  // Refers to src/main/resources/templates/user/dashboard.html
     }
@@ -60,6 +68,12 @@ public class TeacherController {
         }
 
         return null;
+    }
+
+    private static void addLinks() {
+        sideNavLinks.clear();
+        sideNavLinks.add(new Link("/teacher/dashboard", "Subjects"));
+        sideNavLinks.add(new Link("/teacher/invite-teacher", "Invite Teacher"));
     }
 
 

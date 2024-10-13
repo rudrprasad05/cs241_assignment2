@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout-dashboard :: head(name='Teacher Dashboard')"><title>Admin Dashboard</title></head>
+
+<body th:replace="layout-dashboard :: body(sideNavLinks=${sideNavLinks})">
+
+<div th:fragment="main" class="">
+
+
+    <div class="card">
+        <img class="card-img-top" src="https://picsum.photos/200/150/?random">
+        <div class="card-block">
+            <figure class="profile">
+                <img src="https://picsum.photos/200/150/?random" class="profile-avatar" alt="">
+            </figure>
+            <h4 class="card-title mt-3" th:text="${subject.getTeacher().getFName() + subject.getTeacher().getLName()}"></h4>
+            <div class="meta">
+                <a>Friends</a>
+            </div>
+            <div class="card-text" th:text="${subject.getDescription()}">
+
+            </div>
+        </div>
+        <div class="card-footer">
+            <small>Last updated 3 mins ago</small>
+            <button class="btn btn-secondary float-right btn-sm">show</button>
+        </div>
+    </div>
+
+
+</div>
+
+</body>
+</html>

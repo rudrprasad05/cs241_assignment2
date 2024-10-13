@@ -1,25 +1,49 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="layout-dashboard :: head"><title>User Dash</title></head>
+<head th:replace="layout-dashboard :: head(name='Subjects')"><title>User Dash</title></head>
 
-<body th:replace="layout-dashboard :: body">
+<body th:replace="layout-dashboard :: body(sideNavLinks=${sideNavLinks})">
 
 <div th:fragment="main" class="">
-
-    <div class="border-end bg-white" id="sidebar-wrapper">
-        <div class="sidebar-heading border-bottom bg-light">DashBoard</div>
-        <div class="list-group list-group-flush h-100">
-            <div th:each="link : ${sideNavLinks}">
-                <a class="list-group-item list-group-item-action list-group-item-light p-3" th:href="@{${link.getUrl()}}" th:text="${link.getLabel()}"></a>
-            </div>
-        </div>
-    </div>
-
     <div class="main">
         <h1>Welcome to the User Dashboard</h1>
         <p>This is the content of the user dashboard.</p>
     </div>
+
+    <table class="table align-middle mb-0 bg-white">
+        <thead class="bg-light">
+        <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Teacher</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="subject : ${subjects}">
+            <td>
+                <div class="d-flex align-items-center">
+                    <div class="ms-3">
+                        <p class="fw-bold mb-1" th:text="${subject.getCode()}"></p>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <p class="fw-normal mb-1" th:text="${subject.getName()}"></p>
+            </td>
+            <td>
+                <p class="fw-normal mb-1" th:text="${subject.getTeacher().getFName()}"></p>
+            </td>
+            <td>
+                <a th:href="@{'/student/subjects/' + ${subject.code}}" type="button" class="btn btn-link btn-sm btn-rounded">
+                    Edit
+                </a>
+            </td>
+        </tr>
+
+        </tbody>
+    </table>
 
 </div>
 

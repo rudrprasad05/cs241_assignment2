@@ -17,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -53,7 +52,7 @@ public class AdminController {
     private static void addLinks() {
         sideNavLinks.clear();
         sideNavLinks.add(new Link("/admin/subjects", "Subjects"));
-        sideNavLinks.add(new Link("/admin/invite-teachers", "Invite Teacher"));
+        sideNavLinks.add(new Link("/admin/invite-teacher", "Invite Teacher"));
     }
 
     @GetMapping("/admin")
@@ -73,7 +72,7 @@ public class AdminController {
     }
 
     // Show invite teacher page
-    @GetMapping("/admin/invite-teachers")
+    @GetMapping("/admin/invite-teacher")
     public String inviteTeachersPage(Model model) {
         List<Subject> allSubjects = subjectRepository.findSubjectsWithoutTeacher();
         addLinks();
@@ -83,9 +82,11 @@ public class AdminController {
         return "admin/invite-teacher";
     }
 
+
+
     // Handle form submission to invite teachers
-    @PostMapping("/admin/invite-teachers")
-    public void inviteTeacher(@RequestParam("password") String password, @RequestParam("fName") String fName, @RequestParam("lName") String lName, Model model) {
+    @PostMapping("/admin/invite-teacher")
+    public String inviteTeacher(@RequestParam("password") String password, @RequestParam("fName") String fName, @RequestParam("lName") String lName, Model model) {
 
         String tId = generateTeacherId();
         String teacherEmail = tId + "@teacher.com";
@@ -100,6 +101,8 @@ public class AdminController {
         inviteLinkRepository.save(inviteLink);
 
         model.addAttribute("inviteLink", "/invite/" + inviteLink.getInviteCode());
+
+        return "redirect:/admin/invite-teacher";
     }
 
 

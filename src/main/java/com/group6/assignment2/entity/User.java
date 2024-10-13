@@ -23,14 +23,19 @@ public abstract class User {
     protected String lName;
     private String profileImage;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", insertable=false, updatable=false)
+    private Role role;
+
     public User(){};
 
-    public User(String username, String email, String password, String fName, String lName) {
+    public User(String username, String email, String password, String fName, String lName, Role role) {
         this.email = email;
         this.password = password;
         this.fName = fName;
         this.lName = lName;
         this.username = username;
+        this.role = role;
     }
 
     public String getFName() {
@@ -89,4 +94,11 @@ public abstract class User {
     }
 
 
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
 }
