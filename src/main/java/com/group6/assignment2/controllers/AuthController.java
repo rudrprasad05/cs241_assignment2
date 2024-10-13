@@ -40,6 +40,7 @@ public class AuthController {
                 // Add more roles if necessary
                 default:
                     return "/";
+
             }
         }
         return "auth/login";
