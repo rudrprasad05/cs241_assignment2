@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout-dashboard :: head(name='Teacher Dashboard')"><title>Admin Dashboard</title></head>
+
+<body th:replace="layout-dashboard :: body(sideNavLinks=${sideNavLinks})">
+
+<div th:fragment="main" class="">
+
+    <div th:each="subjectClass : ${subject.getSubjectClasses()}">
+        <div class="card-block">
+            <!-- Access SubjectClass via entry.key -->
+            <h4 class="card-title mt-3" th:text="${subjectClass.getDay()}"></h4>
+            <div class="meta" th:text="${subjectClass.getRoomCode()}"></div>
+
+            <a th:href="@{/teacher/subjects/{code}/{classId}(code=${subject.getCode()}, classId=${subjectClass.getId()})}">View</a>
+        </div>
+    </div>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+
+
+
+</div>
+
+</body>
+</html>

@@ -2,20 +2,23 @@ package com.group6.assignment2.controllers.teacher;
 
 import com.group6.assignment2.config.Link;
 import com.group6.assignment2.entity.Subject;
+import com.group6.assignment2.entity.SubjectClass;
 import com.group6.assignment2.entity.Teacher;
-import com.group6.assignment2.repository.InviteLinkRepository;
-import com.group6.assignment2.repository.TeacherRepository;
-import com.group6.assignment2.repository.UserRepository;
+import com.group6.assignment2.entity.User;
+import com.group6.assignment2.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +30,12 @@ public class TeacherController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private SubjectRepository subjectRepository;
+
+    @Autowired
+    private SubjectClassRepository subjectClassRepository;
 
     @Autowired
     private TeacherRepository teacherRepository;
@@ -53,6 +62,35 @@ public class TeacherController {
 
 
         return "teacher/dashboard";  // Refers to src/main/resources/templates/user/dashboard.html
+    }
+
+    @GetMapping("/teacher/subjects/{code}")
+    public String teacherSubject(Model model, @PathVariable("code") String code, @AuthenticationPrincipal UserDetails userDetails) {
+
+        Subject subject = subjectRepository.findByCode(code);
+        User teacher = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        addLinks();
+        model.addAttribute("subject", subject);
+        model.addAttribute("sideNavLinks", sideNavLinks);
+
+
+        return "teacher/subject-details";  // Refers to src/main/resources/templates/user/dashboard.html
+    }
+
+    @GetMapping("/teacher/subjects/{code}/{classId}")
+    public String teacherClassSubject(Model model, @PathVariable("code") String code, @PathVariable("classId") String classId, @AuthenticationPrincipal UserDetails userDetails) {
+
+        Subject subject = subjectRepository.findByCode(code);
+        SubjectClass subjectClass = subjectClassRepository.findByCode(classId);
+        User teacher = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        addLinks();
+        model.addAttribute("subject", subject);
+        model.addAttribute("subjectClass", subjectClass);
+        model.addAttribute("sideNavLinks", sideNavLinks);
+
+
+        return "teacher/class-details";  // Refers to src/main/resources/templates/user/dashboard.html
     }
 
     private Teacher getLoggedTeacher() {

@@ -3,6 +3,7 @@ package com.group6.assignment2.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -15,21 +16,42 @@ public class SubjectClass {
     private String time;
     private String roomCode;
 
-    public SubjectClass(String day, String time, String roomCode, Subject subject) {
-        this.day = day;
-        this.time = time;
-        this.roomCode = roomCode;
-        this.subject = subject;
-    }
-
-    public SubjectClass() {}
-
     @ManyToOne
     @JoinColumn(name = "subject_id", nullable = false)
     private Subject subject;
 
     @OneToMany(mappedBy = "subjectClass", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Enrollment> enrollments;
+
+    public List<Session> getSessions() {
+        return sessions;
+    }
+
+    public void setSessions(List<Session> sessions) {
+        this.sessions = sessions;
+    }
+
+    @OneToMany(mappedBy = "subjectClass", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Session> sessions;
+
+    public SubjectClass(String day, String time, String roomCode, Subject subject) {
+        this.day = day;
+        this.time = time;
+        this.roomCode = roomCode;
+        this.subject = subject;
+
+        int weeks = 13;
+        List<Session> sessionList = new ArrayList<>();
+
+        for(int i = 1; i <= weeks; i++) {
+            Session tempSession = new Session(i, this);
+            sessionList.add(tempSession);
+        }
+
+        this.sessions = sessionList;
+    }
+
+    public SubjectClass() {}
 
     public List<Enrollment> getEnrollments() {
         return enrollments;

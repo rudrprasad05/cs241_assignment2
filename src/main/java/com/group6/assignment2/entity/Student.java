@@ -1,10 +1,8 @@
 package com.group6.assignment2.entity;
 
-import com.group6.assignment2.repository.StudentRepository;
 import jakarta.persistence.*;
 
 import java.util.List;
-import java.util.Random;
 
 @Entity
 @DiscriminatorValue("STUDENT")
@@ -14,6 +12,9 @@ public class Student extends User {
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Enrollment> enrollments;
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Attendance> attendanceRecords;
 
     public Student(String username, String fName, String lName, String email, String password, String studentId) {
         super(username, email, password, fName, lName, Role.STUDENT);
@@ -41,5 +42,12 @@ public class Student extends User {
         this.enrollments = enrollments;
     }
 
+    public List<Attendance> getAttendanceRecords() {
+        return attendanceRecords;
+    }
+
+    public void setAttendanceRecords(List<Attendance> attendanceRecords) {
+        this.attendanceRecords = attendanceRecords;
+    }
 
 }
