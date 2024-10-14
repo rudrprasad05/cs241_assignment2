@@ -7,20 +7,11 @@
 
 <div th:fragment="main" class="">
 
-    <div>
-        <div class="card-block">
-            <!-- Access SubjectClass via entry.key -->
-            <h4>Session Week: </h4>
-            <h4 class="card-title mt-3" th:text="${session.getWeek()}"></h4>
-
-            <h4>Attendance Records</h4>
-
-            <div th:each="attendance : ${attendanceRecords}">
-                <div>
-                    <h4 th:text="${attendance.getStudent().getFName()}"></h4>
-                    <h4 th:text="${attendance.isPresent()}"></h4>
-
-                </div>
+    <div class="container-fluid w-100 m-2">
+        <div class="card container-fluid" th:each="attendance : ${attendanceRecords}">
+            <div class="card-body d-flex">
+                <h5 class="card-title" th:text="${attendance.getStudent().getFName()}"></h5>
+                <div th:text="${attendance.isPresent() ? 'Present' : 'Absent'}"></div>
             </div>
         </div>
     </div>

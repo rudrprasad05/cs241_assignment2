@@ -89,6 +89,7 @@ public class TeacherController {
         addLinks();
         model.addAttribute("subject", subject);
         model.addAttribute("subjectClass", subjectClass);
+        model.addAttribute("sessionClass", subjectClass.getSessions());
         model.addAttribute("sideNavLinks", sideNavLinks);
 
 
@@ -101,13 +102,16 @@ public class TeacherController {
         Subject subject = subjectRepository.findByCode(code);
         SubjectClass subjectClass = subjectClassRepository.findByCode(classId);
 
-        Optional<Session> sessionOptional = sessionRepository.findById(Long.getLong(classSessionId));
-        Session session = sessionOptional.orElseThrow(() -> new ExpressionException("Session not found with id"));
+        Session session = sessionRepository.findBySessionId(classSessionId);
 
         List<Attendance> attendanceRecords = session.getAttendanceRecords();
         User teacher = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         addLinks();
+
+        for(Attendance attendanceRecord : attendanceRecords) {
+            System.out.println(attendanceRecord.isPresent());
+        }
         model.addAttribute("subject", subject);
         model.addAttribute("attendanceRecords", attendanceRecords);
         model.addAttribute("subjectClass", subjectClass);
