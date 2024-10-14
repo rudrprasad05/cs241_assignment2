@@ -44,7 +44,7 @@ public class EnrollmentController {
         List<Session> sessionsList = subjectClass.getSessions();
 
         for(Session session : sessionsList) {
-            Attendance attendance = new Attendance(false, "n/a", student, session);
+            Attendance attendance = new Attendance(Attendance.ATTENDANCE.NOT_MARKED, "n/a", student, session);
             attendanceRepository.save(attendance);
         }
 

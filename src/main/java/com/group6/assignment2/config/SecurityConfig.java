@@ -37,8 +37,8 @@ public class SecurityConfig {
 //                .csrf().disable()
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/", "/auth/**", "/test/**", "/css/**", "/js/**").permitAll()
-//                        .requestMatchers("/admin/**").hasRole("ADMIN")
-//                        .requestMatchers("/teacher/**").hasRole("TEACHER")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/teacher/**").hasRole("TEACHER")
                         .requestMatchers("/student/**").hasRole("STUDENT")
                         .anyRequest().authenticated()
                 )

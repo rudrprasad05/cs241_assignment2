@@ -2,8 +2,6 @@ package com.group6.assignment2.entity;
 
 import jakarta.persistence.*;
 
-import java.util.Date;
-
 @Entity
 public class Attendance {
     @Id
@@ -11,7 +9,7 @@ public class Attendance {
     private Long id;
 
     @Column(nullable = false)
-    private boolean isPresent;
+    private ATTENDANCE isPresent;
 
     private String excuse;
 
@@ -25,7 +23,7 @@ public class Attendance {
 
     public Attendance() {}
 
-    public Attendance(boolean isPresent, String excuse, Student student, Session session) {
+    public Attendance(ATTENDANCE isPresent, String excuse, Student student, Session session) {
         this.isPresent = isPresent;
         this.excuse = excuse;
         this.student = student;
@@ -40,11 +38,11 @@ public class Attendance {
         this.id = id;
     }
 
-    public boolean isPresent() {
+    public ATTENDANCE isPresent() {
         return isPresent;
     }
 
-    public void setPresent(boolean present) {
+    public void setPresent(ATTENDANCE present) {
         isPresent = present;
     }
 
@@ -70,5 +68,13 @@ public class Attendance {
 
     public void setSession(Session session) {
         this.session = session;
+    }
+
+    public enum ATTENDANCE {
+        PRESENT,
+        ABSENT,
+        LATE,
+        EXCUSED,
+        NOT_MARKED
     }
 }

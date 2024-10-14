@@ -11,8 +11,13 @@
         <div class="card container-fluid" th:each="attendance : ${attendanceRecords}">
             <div class="card-body d-flex">
                 <h5 class="card-title" th:text="${attendance.getStudent().getFName()}"></h5>
-                <div th:text="${attendance.isPresent() ? 'Present' : 'Absent'}"></div>
+                <div th:text="${attendance.isPresent()}"></div>
+                <button class="btn btn-primary" data-bs-toggle="modal" th:attr="data-bs-target='#modal-' + ${attendance.getId()}">Update</button>
+
+                <div th:replace="modals/updateStudentAttendance :: modal(id=${attendance.getId()}, attendance=${attendance})" class="modal fade" th:id="'modal-' + ${id}" tabindex="-1" role="dialog" aria-labelledby="updateStudentAttendance" aria-hidden="true"></div>
+
             </div>
+
         </div>
     </div>
 </div>
