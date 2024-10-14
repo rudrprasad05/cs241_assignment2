@@ -7,12 +7,21 @@
 
 <div th:fragment="main" class="">
 
-    <div th:each="classSession : ${subjectClass.getSessions()}">
+    <div>
         <div class="card-block">
             <!-- Access SubjectClass via entry.key -->
-            <h4 class="card-title mt-3" th:text="${classSession.getWeek()}"></h4>
+            <h4>Session Week: </h4>
+            <h4 class="card-title mt-3" th:text="${session.getWeek()}"></h4>
 
-            <a th:href="@{/teacher/subjects/{code}/{classId}/{classSessionId}(code=${subject.getCode()}, classId=${subjectClass.getId()}, classSessionId=${classSession.getId()})}">View</a>
+            <h4>Attendance Records</h4>
+
+            <div th:each="attendance : ${attendanceRecords}">
+                <div>
+                    <h4 th:text="${attendance.getStudent().getFName()}"></h4>
+                    <h4 th:text="${attendance.isPresent()}"></h4>
+
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -6,8 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class Assignment2Application {
 
-	// added commeny
-
 	public static void main(String[] args) {
 		MySQLConnectionTest mySQLConnectionTest = new MySQLConnectionTest();
 		if(mySQLConnectionTest.test()){

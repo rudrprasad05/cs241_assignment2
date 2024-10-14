@@ -6,6 +6,7 @@ import com.group6.assignment2.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.expression.ExpressionException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -99,17 +100,22 @@ public class TeacherController {
 
         Subject subject = subjectRepository.findByCode(code);
         SubjectClass subjectClass = subjectClassRepository.findByCode(classId);
-        Optional<Session> session = sessionRepository.findById(Long.getLong(classSessionId));
-        Session s = session.
+
+        Optional<Session> sessionOptional = sessionRepository.findById(Long.getLong(classSessionId));
+        Session session = sessionOptional.orElseThrow(() -> new ExpressionException("Session not found with id"));
+
+        List<Attendance> attendanceRecords = session.getAttendanceRecords();
         User teacher = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         addLinks();
         model.addAttribute("subject", subject);
+        model.addAttribute("attendanceRecords", attendanceRecords);
         model.addAttribute("subjectClass", subjectClass);
+        model.addAttribute("session", session);
         model.addAttribute("sideNavLinks", sideNavLinks);
 
 
-        return "teacher/class-details";  // Refers to src/main/resources/templates/user/dashboard.html
+        return "teacher/session-details";  // Refers to src/main/resources/templates/user/dashboard.html
     }
 
     private Teacher getLoggedTeacher() {
