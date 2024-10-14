@@ -91,18 +91,24 @@ public class AuthController {
         Notification notification = new Notification(message, title, notificationType, admin, student);
         notificationRepository.save(notification);
 
-        String header = "Hey there! Welcome to our Attendance Tracker";
-        String body = "Use this link to access the login page: <a href='localhost:8080/auth/invite" + inviteLinkCode + "'>Invite Link</a> " +
-                "<p>Cant see the code? Copy paste this into your browser http://localhost:8080/auth/invite/" + inviteLinkCode + "</p>";
-        String subject = "Invitation Link";
-
-        Email email = new Email(header, body, subject, personalEmail);
+        Email email = getEmail(personalEmail, inviteLinkCode, studentId);
         emailRepository.save(email);
         EmailController.SendAutomatedEmail(email);
 
         model.addAttribute("message", "Application submitted successfully. Your student ID is " + studentId);
 
         return "redirect:/auth/application-success?id=" + studentId;
+    }
+
+    private static Email getEmail(String personalEmail, String inviteLinkCode, String studentId) {
+        String header = "Hey there! Welcome to our Attendance Tracker";
+        String body = "Use this link to access the login page: <a href='localhost:8080/auth/invite" + inviteLinkCode + "'>Invite Link</a> " +
+                "<p>Cant see the code? Copy paste this into your browser http://localhost:8080/auth/invite/" + inviteLinkCode + "</p>" +
+                "<p>Your username and student ID is: " + studentId + "</p>";
+        String subject = "Invitation Link";
+
+        Email email = new Email(header, body, subject, personalEmail);
+        return email;
     }
 
     private String generateStudentId() {

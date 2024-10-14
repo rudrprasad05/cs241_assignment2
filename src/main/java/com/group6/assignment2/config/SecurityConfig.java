@@ -40,6 +40,8 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/teacher/**").hasRole("TEACHER")
                         .requestMatchers("/student/**").hasRole("STUDENT")
+                        .requestMatchers("/parent/**").hasRole("PARENT")
+
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout-dashboard :: head(name='Parent Dashboard')"><title>User Dash</title></head>
+
+<body th:replace="layout-dashboard :: body(sideNavLinks=${sideNavLinks})">
+
+    <div th:fragment="main" class="d-flex">
+
+        <div class="main container-fluid">
+            <h1>Welcome to the Parent Dashboard</h1>
+            <p>This is the content of the Parent dashboard.</p>
+        </div>
+
+    </div>
+
+</body>
+</html>

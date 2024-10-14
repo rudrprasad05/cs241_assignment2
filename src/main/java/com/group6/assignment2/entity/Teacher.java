@@ -19,8 +19,9 @@ public class Teacher extends User {
 
     public Teacher() {}
 
-    public Teacher(String username, String email, String password, String fName, String lName) {
+    public Teacher(String username, String email, String personalEmail, String password, String fName, String lName) {
         super(username, email, password, fName, lName, Role.TEACHER);
+        this.setPersonalEmail(personalEmail);
         this.teacherId = username;
     }
 

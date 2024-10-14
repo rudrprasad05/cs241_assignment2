@@ -13,12 +13,24 @@ public class Student extends User {
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Enrollment> enrollments;
 
+    public List<Parent> getParents() {
+        return parents;
+    }
+
+    public void setParents(List<Parent> parents) {
+        this.parents = parents;
+    }
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Parent> parents;
+
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Attendance> attendanceRecords;
 
-    public Student(String username, String fName, String lName, String email, String password, String studentId) {
+    public Student(String username, String fName, String lName, String email, String personalEmail, String password) {
         super(username, email, password, fName, lName, Role.STUDENT);
-        this.studentId = studentId;
+        this.setPersonalEmail(personalEmail);
+        this.studentId = username;
 
     }
     public Student() {

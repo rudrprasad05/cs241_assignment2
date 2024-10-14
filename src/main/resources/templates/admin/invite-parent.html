@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout-dashboard :: head(name='Invite User')}"><title>Invite Teachers</title></head>
+
+<body th:replace="~{layout-dashboard :: body(sideNavLinks=${sideNavLinks})}">
+
+<div th:fragment="main" class="d-flex">
+
+    <div class="main container-fluid">
+        <div class="mt-5">
+            <h1>Invite Parents</h1>
+            <!-- CSRF Token -->
+            <form action="/admin/invite-parent" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                <div class="mb-3">
+                    <label for="fName" class="form-label">Enter first name</label>
+                    <input type="text" class="form-control" id="fName" name="fName" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="lName" class="form-label">Enter last name</label>
+                    <input type="text" class="form-control" id="lName" name="lName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="personalEmail" class="form-label">Personal Email</label>
+                    <input type="text" class="form-control" id="personalEmail" name="personalEmail" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="d-flex">
+                        <div class="form-group position-relative flex-grow-1 d-flex">
+                            <input type="password" class="form-control flex-grow-1" id="password" name="password" required>
+                            <button class="" type="button" id="togglePassword" style="cursor: pointer; width: 25px; height: 100%">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <button type="button" class="btn btn-secondary text-nowrap" id="generatePassword">Generate Password</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="studentId">Select student for the parent:</label>
+                    <select name="studentId" id="studentId" class="form-control">
+                        <option selected disabled>Select a student</option>
+                        <option th:each="student : ${allStudents}" th:value="${student.getUsername()}" th:text="${student.getUsername()}">
+                        </option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Send Invite</button>
+            </form>
+        </div>
+    </div>
+
+    <script th:src="@{/js/GeneratePassword.js}"></script>
+    <script th:src="@{/js/TogglePassword.js}"></script>
+
+</div>
+
+</body>
+</html>
+

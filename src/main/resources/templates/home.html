@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <!-- Use the base layout -->
-<head th:replace="layout-general :: head"></head>
+<head th:replace="layout-general :: head(pageTitle='Home')"></head>
 <body th:replace="layout-general :: body">
 <div th:fragment="main">
     <h1>Welcome to the Home Page</h1>

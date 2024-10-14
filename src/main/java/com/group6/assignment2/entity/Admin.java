@@ -14,6 +14,14 @@ public class Admin extends User {
         return adminLevel;
     }
 
+    public Admin(){}
+
+    public Admin(String username, String fName, String lName, String email, String personalEmail, String password) {
+        super(username, email, password, fName, lName, Role.ADMIN);
+        this.setPersonalEmail(personalEmail);
+
+    }
+
     public void setAdminLevel(String adminLevel) {
         this.adminLevel = adminLevel;
     }

@@ -2,8 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <!-- Use the base layout -->
-<head th:replace="layout-general :: head"></head>
-<body th:replace="layout-general :: body">
+<head th:replace="~{layout-general :: head(pageTitle='Application')}"></head>
+<body th:replace="~{layout-general :: body}">
 <div th:fragment="main">
     <div class="container">
         <div class="row justify-content-center">

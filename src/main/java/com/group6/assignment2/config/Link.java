@@ -35,7 +35,8 @@ public class Link {
         }
         else if(Objects.equals(type, "admin")){
             links.add(new Link("/admin/subjects", "Subjects"));
-            links.add(new Link("/admin/invite-teacher", "Invite Teacher"));
+            links.add(new Link("/admin/invite-user", "Invite User"));
+            links.add(new Link("/admin/invite-parent", "Invite Parent"));
         }
 
         return links;

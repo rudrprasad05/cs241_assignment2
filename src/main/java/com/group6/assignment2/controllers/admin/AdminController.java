@@ -37,14 +37,15 @@ public class AdminController {
     private EmailRepository emailRepository;
     @Autowired
     private InviteLinkRepository inviteLinkRepository;
-
     @Autowired
     private SubjectRepository subjectRepository;
-
+    @Autowired
+    private StudentRepository studentRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     static List<Link> sideNavLinks = new ArrayList<>();
+
 
     public AdminController() {
         sideNavLinks = Link.addLinks("admin");
@@ -67,43 +68,99 @@ public class AdminController {
     }
 
     // Show invite teacher page
-    @GetMapping("/admin/invite-teacher")
-    public String inviteTeachersPage(Model model) {
-        List<Subject> allSubjects = subjectRepository.findSubjectsWithoutTeacher();
+    @GetMapping("/admin/invite-user")
+    public String inviteUser(Model model) {
         sideNavLinks = Link.addLinks("admin");
 
+        List<Role> roles = new ArrayList<>(List.of(Role.values()));
+        roles.remove(Role.PARENT);
+
+
+
         model.addAttribute("sideNavLinks", sideNavLinks);
-        model.addAttribute("subjects", allSubjects);
-        return "admin/invite-teacher";
+
+        model.addAttribute("roles", roles);
+        return "admin/invite-user";
+    }
+
+    @GetMapping("/admin/invite-parent")
+    public String inviteParent(Model model) {
+        sideNavLinks = Link.addLinks("admin");
+
+        List<User> allStudents = userRepository.findAllByRole(Role.STUDENT);
+
+        model.addAttribute("sideNavLinks", sideNavLinks);
+        model.addAttribute("allStudents", allStudents);
+        return "admin/invite-parent";
     }
 
 
 
     // Handle form submission to invite teachers
-    @PostMapping("/admin/invite-teacher")
-    public String inviteTeacher(@RequestParam("personalEmail") String personalEmail, @RequestParam("password") String password, @RequestParam("fName") String fName, @RequestParam("lName") String lName, Model model, @AuthenticationPrincipal UserDetails userDetails) {
+    @PostMapping("/admin/invite-user")
+    public String inviteTeacher(@RequestParam("personalEmail") String personalEmail, @RequestParam("password") String password, @RequestParam("fName") String fName, @RequestParam("role") Role role, @RequestParam("lName") String lName, Model model, @AuthenticationPrincipal UserDetails userDetails) {
 
-        String tId = generateTeacherId();
-        String teacherEmail = tId + "@teacher.com";
+        String id;
+        User user;
+        String emailString;
+        String passwordString = passwordEncoder.encode(password);
 
-        // Create a new user with role = 2 (teacher)
-        Teacher teacher = new Teacher(tId, teacherEmail, passwordEncoder.encode(password), fName, lName);
-        teacher.setPersonalEmail(personalEmail);
-        teacherRepository.save(teacher);
+        switch (role){
+            case TEACHER:
+                id = generateId("T");
+                emailString = id + "@teacher.com";
+                user = new Teacher(id, emailString, personalEmail, passwordString, fName, lName);
+                break;
+            case STUDENT:
+                id = generateId("S");
+                emailString = id + "@student.com";
+                user = new Student(id, fName, lName, emailString, personalEmail, passwordString);
+                break;
+            case ADMIN:
+                id = generateId("A");
+                emailString = id + "@admin.com";
+                user = new Admin(id, fName, lName, emailString, personalEmail, passwordString);
+                break;
 
-        // Create an invite link and associate it with the teacher
-        String inviteLinkCode = UUID.randomUUID().toString().replace("-", "").substring(0, 32);  // Generate a 32-character random string
-        InviteLink inviteLink = new InviteLink(inviteLinkCode);
-        inviteLink.setUser(teacher);
-        inviteLinkRepository.save(inviteLink);
+            default:
+                id = generateId("U");
+                emailString = id + "@user.com";
+                user = new Student(id, fName, lName, emailString, personalEmail, passwordString);
+                break;
+        }
+        userRepository.save(user);
 
-        String message = "You have been invited to join us on our attendance management system";
-        String title = "Welcome!!";
-        Notification.NotificationType notificationType = Notification.NotificationType.INFO;
-        User sender =  userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));;
-        Notification notification = new Notification(message, title, notificationType, sender, teacher);
-        notificationRepository.save(notification);
+        String inviteLinkCode = createInviteLink(user);
+        sendNotification(userDetails, user);
+        sendEmail(personalEmail, inviteLinkCode);
 
+        model.addAttribute("inviteLink", "/invite/" + inviteLinkCode);
+
+        return "redirect:/admin/invite-user";
+    }
+
+    @PostMapping("/admin/invite-parent")
+    public String inviteParent(@RequestParam("personalEmail") String personalEmail, @RequestParam("password") String password, @RequestParam("studentId") String studentId, @RequestParam("fName") String fName, @RequestParam("lName") String lName, Model model, @AuthenticationPrincipal UserDetails userDetails) {
+
+        String id = generateId("P");
+        String emailString = id + "@parent.com";
+        String passwordString = passwordEncoder.encode(password);
+
+        Parent user = new Parent(id, fName, lName, emailString, personalEmail, passwordString);
+        Student student = studentRepository.findByStudentId(studentId);
+        user.setStudent(student);
+        userRepository.save(user);
+
+        String inviteLinkCode = createInviteLink(user);
+        sendNotification(userDetails, user);
+        sendEmail(personalEmail, inviteLinkCode);
+
+        model.addAttribute("inviteLink", "/invite/" + inviteLinkCode);
+
+        return "redirect:/admin/invite-parent";
+    }
+
+    private void sendEmail(String personalEmail, String inviteLinkCode) {
         String header = "Hey there! Welcome to our Attendance Tracker";
         String body = "Use this link to verify your email: <a href='localhost:8080/auth/invite" + inviteLinkCode + "'>Invite Link</a> " +
                 "<p>Cant see the code? Copy paste this into your browser http://localhost:8080/auth/invite/" + inviteLinkCode + "</p>";
@@ -112,17 +169,30 @@ public class AdminController {
         Email email = new Email(header, body, subject, personalEmail);
         emailRepository.save(email);
         EmailController.SendAutomatedEmail(email);
+    }
 
-        model.addAttribute("inviteLink", "/invite/" + inviteLinkCode);
+    private void sendNotification(UserDetails userDetails, User user) {
+        String message = "You have been invited to join us on our attendance management system";
+        String title = "Welcome!!";
+        Notification.NotificationType notificationType = Notification.NotificationType.INFO;
+        User sender =  userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        ;
+        Notification notification = new Notification(message, title, notificationType, sender, user);
+        notificationRepository.save(notification);
+    }
 
-        return "redirect:/admin/invite-teacher";
+    private String createInviteLink(User user) {
+        String inviteLinkCode = UUID.randomUUID().toString().replace("-", "").substring(0, 32);  // Generate a 32-character random string
+        InviteLink inviteLink = new InviteLink(inviteLinkCode);
+        inviteLink.setUser(user);
+        inviteLinkRepository.save(inviteLink);
+        return inviteLinkCode;
     }
 
 
-
-    private String generateTeacherId() {
+    private String generateId(String type) {
         Random random = new Random();
-        StringBuilder teacherId = new StringBuilder("T");
+        StringBuilder teacherId = new StringBuilder(type);
         for (int i = 0; i < 8; i++) {
             teacherId.append(random.nextInt(9) + 1);  // Ensuring numbers are between 1 and 9
         }
@@ -131,7 +201,7 @@ public class AdminController {
 
         // Check if the ID already exists, if it does, recursively generate a new one
         if (teacherRepository.findByTeacherId(tId) != null) {
-            return generateTeacherId();  // Return the result from the recursive call
+            return generateId(type);  // Return the result from the recursive call
         } else {
             return tId;  // Return the generated ID if it's unique
         }
