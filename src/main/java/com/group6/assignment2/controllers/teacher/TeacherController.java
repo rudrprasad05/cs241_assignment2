@@ -1,10 +1,7 @@
 package com.group6.assignment2.controllers.teacher;
 
 import com.group6.assignment2.config.Link;
-import com.group6.assignment2.entity.Subject;
-import com.group6.assignment2.entity.SubjectClass;
-import com.group6.assignment2.entity.Teacher;
-import com.group6.assignment2.entity.User;
+import com.group6.assignment2.entity.*;
 import com.group6.assignment2.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Controller
@@ -42,6 +40,9 @@ public class TeacherController {
 
     @Autowired
     private InviteLinkRepository inviteLinkRepository;
+
+    @Autowired
+    private SessionRepository sessionRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -82,6 +83,24 @@ public class TeacherController {
 
         Subject subject = subjectRepository.findByCode(code);
         SubjectClass subjectClass = subjectClassRepository.findByCode(classId);
+        User teacher = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        addLinks();
+        model.addAttribute("subject", subject);
+        model.addAttribute("subjectClass", subjectClass);
+        model.addAttribute("sideNavLinks", sideNavLinks);
+
+
+        return "teacher/class-details";  // Refers to src/main/resources/templates/user/dashboard.html
+    }
+
+    @GetMapping("/teacher/subjects/{code}/{classId}/{classSessionId}")
+    public String teacherClassSubjectSession(Model model, @PathVariable("code") String code, @PathVariable("classId") String classId, @PathVariable("classSessionId") String classSessionId, @AuthenticationPrincipal UserDetails userDetails) {
+
+        Subject subject = subjectRepository.findByCode(code);
+        SubjectClass subjectClass = subjectClassRepository.findByCode(classId);
+        Optional<Session> session = sessionRepository.findById(Long.getLong(classSessionId));
+        Session s = session.
         User teacher = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         addLinks();
