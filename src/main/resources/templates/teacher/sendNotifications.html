@@ -7,7 +7,7 @@
 
 <div th:fragment="main" class="">
 
-    <form action="/teacher/send-notification" method="post">
+    <form action="/user/send-notification" method="post">
         <!-- CSRF Token -->
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
@@ -41,7 +41,7 @@
         <button type="submit" class="btn btn-primary">Send Notification</button>
     </form>
 
-    <a th:href="${'/teacher/notifications'}">Back</a>
+    <a th:href="${'/user/notifications'}">Back</a>
 </div>
 
 

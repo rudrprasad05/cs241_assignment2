@@ -2,6 +2,7 @@ package com.group6.assignment2.controllers.admin;
 
 import com.group6.assignment2.config.Link;
 import com.group6.assignment2.config.RedirectionConfig;
+import com.group6.assignment2.controllers.EmailController;
 import com.group6.assignment2.entity.*;
 import com.group6.assignment2.repository.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 @Controller
 public class AdminController {
@@ -31,7 +33,8 @@ public class AdminController {
     private NotificationRepository notificationRepository;
     @Autowired
     private TeacherRepository teacherRepository;
-
+    @Autowired
+    private EmailRepository emailRepository;
     @Autowired
     private InviteLinkRepository inviteLinkRepository;
 
@@ -78,29 +81,39 @@ public class AdminController {
 
     // Handle form submission to invite teachers
     @PostMapping("/admin/invite-teacher")
-    public String inviteTeacher(@RequestParam("password") String password, @RequestParam("fName") String fName, @RequestParam("lName") String lName, Model model, @AuthenticationPrincipal UserDetails userDetails) {
+    public String inviteTeacher(@RequestParam("personalEmail") String personalEmail, @RequestParam("password") String password, @RequestParam("fName") String fName, @RequestParam("lName") String lName, Model model, @AuthenticationPrincipal UserDetails userDetails) {
 
         String tId = generateTeacherId();
         String teacherEmail = tId + "@teacher.com";
 
         // Create a new user with role = 2 (teacher)
         Teacher teacher = new Teacher(tId, teacherEmail, passwordEncoder.encode(password), fName, lName);
+        teacher.setPersonalEmail(personalEmail);
         teacherRepository.save(teacher);
 
         // Create an invite link and associate it with the teacher
-        InviteLink inviteLink = new InviteLink();
-        inviteLink.setTeacher(teacher);
+        String inviteLinkCode = UUID.randomUUID().toString().replace("-", "").substring(0, 32);  // Generate a 32-character random string
+        InviteLink inviteLink = new InviteLink(inviteLinkCode);
+        inviteLink.setUser(teacher);
         inviteLinkRepository.save(inviteLink);
 
         String message = "You have been invited to join us on our attendance management system";
         String title = "Welcome!!";
         Notification.NotificationType notificationType = Notification.NotificationType.INFO;
         User sender =  userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));;
-
         Notification notification = new Notification(message, title, notificationType, sender, teacher);
         notificationRepository.save(notification);
 
-        model.addAttribute("inviteLink", "/invite/" + inviteLink.getInviteCode());
+        String header = "Hey there! Welcome to our Attendance Tracker";
+        String body = "Use this link to verify your email: <a href='localhost:8080/auth/invite" + inviteLinkCode + "'>Invite Link</a> " +
+                "<p>Cant see the code? Copy paste this into your browser http://localhost:8080/auth/invite/" + inviteLinkCode + "</p>";
+        String subject = "Invitation Link";
+
+        Email email = new Email(header, body, subject, personalEmail);
+        emailRepository.save(email);
+        EmailController.SendAutomatedEmail(email);
+
+        model.addAttribute("inviteLink", "/invite/" + inviteLinkCode);
 
         return "redirect:/admin/invite-teacher";
     }

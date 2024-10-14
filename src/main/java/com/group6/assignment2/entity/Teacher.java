@@ -17,9 +17,6 @@ public class Teacher extends User {
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
     private List<Subject> subjects;
 
-    @OneToOne(mappedBy = "teacher", cascade = CascadeType.ALL)
-    private InviteLink inviteLink;
-
     public Teacher() {}
 
     public Teacher(String username, String email, String password, String fName, String lName) {
@@ -51,11 +48,5 @@ public class Teacher extends User {
     public void setSubjects(List<Subject> subjects) {
         this.subjects = subjects;
     }
-    public InviteLink getInviteLink() {
-        return inviteLink;
-    }
 
-    public void setInviteLink(InviteLink inviteLink) {
-        this.inviteLink = inviteLink;
-    }
 }

@@ -57,7 +57,7 @@ public class InviteController {
         }
 
         // Fetch the associated user (teacher)
-        User user = inviteLink.getTeacher();
+        User user = inviteLink.getUser();
 
         // Set the new password and mark the invite as redeemed
         user.setPassword(passwordEncoder.encode(password));

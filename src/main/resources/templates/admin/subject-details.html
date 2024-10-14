@@ -13,7 +13,7 @@
 
         <!-- Add more details as needed -->
         <p>Number of Classes: <span th:text="0">0</span></p>
-        <p>Teacher: <span th:text="${subject.teacher.getFName()} + ' ' + ${subject.teacher.getLName()}"></span></p>
+        <p>Teacher: <span th:text="${subject.user.getFName()} + ' ' + ${subject.user.getLName()}"></span></p>
 
         <!-- Back to subject list -->
         <a href="/admin/subjects">Back to Subjects List</a>

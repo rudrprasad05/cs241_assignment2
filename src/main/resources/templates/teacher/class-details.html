@@ -12,7 +12,7 @@
             <!-- Access SubjectClass via entry.key -->
             <h4 class="card-title mt-3" th:text="${classSession.getWeek()}"></h4>
 
-            <a th:href="@{/teacher/subjects/{code}/{classId}/{classSessionId}(code=${subject.getCode()}, classId=${subjectClass.getId()}, classSessionId=${classSession.getId()})}">View</a>
+            <a th:href="@{/user/subjects/{code}/{classId}/{classSessionId}(code=${subject.getCode()}, classId=${subjectClass.getId()}, classSessionId=${classSession.getId()})}">View</a>
         </div>
     </div>
 

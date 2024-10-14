@@ -24,6 +24,32 @@ public abstract class User {
     protected String lName;
     protected String profileImage;
 
+    public String getfName() {
+        return fName;
+    }
+
+    public void setfName(String fName) {
+        this.fName = fName;
+    }
+
+    public String getlName() {
+        return lName;
+    }
+
+    public void setlName(String lName) {
+        this.lName = lName;
+    }
+
+    public String getPersonalEmail() {
+        return personalEmail;
+    }
+
+    public void setPersonalEmail(String personalEmail) {
+        this.personalEmail = personalEmail;
+    }
+
+    protected String personalEmail;
+
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
     protected List<Notification> receivedNotifications;
 
@@ -45,6 +71,17 @@ public abstract class User {
 
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
     protected List<Notification> sentNotifications;
+
+    public InviteLink getInviteLink() {
+        return inviteLink;
+    }
+
+    public void setInviteLink(InviteLink inviteLink) {
+        this.inviteLink = inviteLink;
+    }
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    protected InviteLink inviteLink;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

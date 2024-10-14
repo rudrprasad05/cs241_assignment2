@@ -2,8 +2,6 @@ package com.group6.assignment2.entity;
 
 import jakarta.persistence.*;
 
-import java.util.UUID;
-
 @Entity
 public class InviteLink {
 
@@ -14,15 +12,19 @@ public class InviteLink {
     @Column(unique = true, nullable = false)
     private String inviteCode;
 
-    private boolean isRedeemed = false;
+    public InviteLink() {
+    }
+
+    private boolean isRedeemed;
 
     // One-to-one relationship with Teacher
     @OneToOne
-    @JoinColumn(name = "teacher_id", referencedColumnName = "id")
-    private Teacher teacher;
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 
-    public InviteLink() {
-        this.inviteCode = UUID.randomUUID().toString().replace("-", "").substring(0, 32);  // Generate a 32-character random string
+    public InviteLink(String inviteCode) {
+        this.inviteCode = inviteCode;
+        this.isRedeemed = false;
     }
 
     // Getters and setters
@@ -46,11 +48,11 @@ public class InviteLink {
         isRedeemed = redeemed;
     }
 
-    public Teacher getTeacher() {
-        return teacher;
+    public User getUser() {
+        return user;
     }
 
-    public void setTeacher(Teacher teacher) {
-        this.teacher = teacher;
+    public void setUser(User user) {
+        this.user = user;
     }
 }

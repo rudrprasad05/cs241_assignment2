@@ -13,7 +13,7 @@
             <h4 class="card-title mt-3" th:text="${subjectClass.getDay()}"></h4>
             <div class="meta" th:text="${subjectClass.getRoomCode()}"></div>
 
-            <a th:href="@{/teacher/subjects/{code}/{classId}(code=${subject.getCode()}, classId=${subjectClass.getId()})}">View</a>
+            <a th:href="@{/user/subjects/{code}/{classId}(code=${subject.getCode()}, classId=${subjectClass.getId()})}">View</a>
         </div>
     </div>
 
