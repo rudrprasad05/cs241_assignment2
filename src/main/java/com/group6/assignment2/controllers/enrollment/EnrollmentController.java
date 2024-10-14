@@ -36,15 +36,16 @@ public class EnrollmentController {
 
         Student student = studentRepository.findByUsername(userDetails.getUsername());
         SubjectClass subjectClass = subjectClassRepository.findByCode(subjectClassId);
+        Subject subject = subjectClass.getSubject();
 
-        Enrollment enrollment = new Enrollment(student, subjectClass);
+        Enrollment enrollment = new Enrollment(student, subjectClass, subject);
         enrollmentRepository.save(enrollment);
 
 
         List<Session> sessionsList = subjectClass.getSessions();
 
         for(Session session : sessionsList) {
-            Attendance attendance = new Attendance(Attendance.ATTENDANCE.NOT_MARKED, "n/a", student, session);
+            Attendance attendance = new Attendance(Attendance.AttendanceType.NOT_MARKED, "n/a", student, session);
             attendanceRepository.save(attendance);
         }
 

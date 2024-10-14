@@ -2,9 +2,10 @@ package com.group6.assignment2.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED) // Use Joined strategy for inheritance
-@DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.STRING)
 public abstract class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,10 +22,32 @@ public abstract class User {
 
     protected String fName;
     protected String lName;
-    private String profileImage;
+    protected String profileImage;
+
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
+    protected List<Notification> receivedNotifications;
+
+    public List<Notification> getSentNotifications() {
+        return sentNotifications;
+    }
+
+    public void setSentNotifications(List<Notification> sentNotifications) {
+        this.sentNotifications = sentNotifications;
+    }
+
+    public List<Notification> getReceivedNotifications() {
+        return receivedNotifications;
+    }
+
+    public void setReceivedNotifications(List<Notification> receivedNotifications) {
+        this.receivedNotifications = receivedNotifications;
+    }
+
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
+    protected List<Notification> sentNotifications;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", insertable=false, updatable=false)
+    @Column(nullable = false)
     private Role role;
 
     public User(){};

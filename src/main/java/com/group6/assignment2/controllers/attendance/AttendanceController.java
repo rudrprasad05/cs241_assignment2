@@ -41,10 +41,10 @@ public class AttendanceController {
 //    public String addClass(@RequestParam("attendanceId") String attendanceId, @RequestParam(value = "isPresent", required = false) boolean isPresent, @AuthenticationPrincipal UserDetails userDetails, HttpServletRequest request) {
 //        Attendance attendance = attendanceRepository.findByAttendanceId(attendanceId);
 //        if(isPresent) {
-//            attendance.setPresent(Attendance.ATTENDANCE.PRESENT);
+//            attendance.setPresent(Attendance.AttendanceType.PRESENT);
 //        }
 //        else{
-//            attendance.setPresent(Attendance.ATTENDANCE.ABSENT);
+//            attendance.setPresent(Attendance.AttendanceType.ABSENT);
 //        }
 //
 //        attendanceRepository.save(attendance);
@@ -56,7 +56,7 @@ public class AttendanceController {
     @PostMapping("/teacher/attendance/update")
     public String addClass(
             @RequestParam("attendanceId") String attendanceId,
-            @RequestParam("attendanceStatus") Attendance.ATTENDANCE attendanceStatus,
+            @RequestParam("attendanceStatus") Attendance.AttendanceType attendanceStatus,
             @AuthenticationPrincipal UserDetails userDetails,
             HttpServletRequest request
     ) {

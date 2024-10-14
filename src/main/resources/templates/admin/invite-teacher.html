@@ -1,26 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{layout-dashboard :: head}"><title>Invite Teachers</title></head>
+<head th:replace="~{layout-dashboard :: head(name='Invite Teachers')}"><title>Invite Teachers</title></head>
 
-<body th:replace="~{layout-dashboard :: body}">
+<body th:replace="~{layout-dashboard :: body(sideNavLinks=${sideNavLinks})}">
 
 <div th:fragment="main" class="d-flex">
-
-    <div class="border-end bg-white" id="sidebar-wrapper">
-        <div class="sidebar-heading border-bottom bg-light">Invite Teachers</div>
-        <div class="list-group list-group-flush h-100">
-            <div th:each="link : ${sideNavLinks}">
-                <a class="list-group-item list-group-item-action list-group-item-light p-3" th:href="@{${link.getUrl()}}" th:text="${link.getLabel()}"></a>
-            </div>
-            <form th:action="@{/auth/logout}" method="post">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                <button class="list-group-item list-group-item-action list-group-item-light p-3" type="submit">Logout</button>
-            </form>
-        </div>
-    </div>
-
-
 
     <div class="main container-fluid">
         <div class="mt-5">

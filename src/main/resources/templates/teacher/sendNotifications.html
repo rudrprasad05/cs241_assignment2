@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout-dashboard :: head(name='Teacher Dashboard')"><title>Admin Dashboard</title></head>
+
+<body th:replace="layout-dashboard :: body(sideNavLinks=${sideNavLinks})">
+
+<div th:fragment="main" class="">
+
+    <form action="/teacher/send-notification" method="post">
+        <!-- CSRF Token -->
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <!-- Message Field -->
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input class="form-control" id="title" name="title" rows="1" required></input>
+        </div>
+        <div class="mb-3">
+            <label for="message" class="form-label">Message</label>
+            <textarea class="form-control" id="message" name="message" rows="3" required></textarea>
+        </div>
+
+        <!-- Notification Type Dropdown -->
+        <div class="mb-3">
+            <label for="type" class="form-label">Notification Type</label>
+            <select class="form-select" id="type" name="type" required>
+                <option th:each="type : ${notificationTypes}" th:value="${type}" th:text="${type}"></option>
+            </select>
+        </div>
+
+        <!-- Receiver Dropdown (Students and Admins) -->
+        <div class="mb-3">
+            <label for="receiver" class="form-label">Receiver</label>
+            <select class="form-select" id="receiver" name="receiverId" required>
+                <option th:each="receiver : ${receivers}" th:value="${receiver.id}" th:text="${receiver.getFName()}"></option>
+            </select>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">Send Notification</button>
+    </form>
+
+    <a th:href="${'/teacher/notifications'}">Back</a>
+</div>
+
+
+</body>
+</html>

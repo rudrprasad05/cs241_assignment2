@@ -50,7 +50,7 @@ public class StudentDashboardController {
         String username = authentication.getName();
         Student student = studentRepository.findByEmail(username);
 
-        addLinks(sideNavLinks);
+        sideNavLinks = Link.addLinks("student");
 
         model.addAttribute("sideNavLinks", sideNavLinks);
         model.addAttribute("pageTitle", "User Dashboard");
@@ -64,7 +64,7 @@ public class StudentDashboardController {
 
         List<Subject> subjects = subjectRepository.findAll();
 
-        addLinks(sideNavLinks);
+        sideNavLinks = Link.addLinks("student");
 
         model.addAttribute("sideNavLinks", sideNavLinks);
         model.addAttribute("subjects", subjects);
@@ -75,7 +75,7 @@ public class StudentDashboardController {
 
     @GetMapping("/student/subjects/{subject_code}")
     public String studentSubjectDetails(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("subject_code") String subject_code, Model model) {
-        addLinks(sideNavLinks);
+        sideNavLinks = Link.addLinks("student");
 
         Student student = studentRepository.findByUsername(userDetails.getUsername());
         Subject subject = subjectRepository.findByCode(subject_code);
@@ -84,10 +84,6 @@ public class StudentDashboardController {
 
         Map<SubjectClass, Enrollment> classEnrollmentMap = new HashMap<>();
 
-
-//        for(SubjectClass subjectClass : subjectClasses) {
-//            enrollments.add(enrollmentRepository.findByStudentIdAndSubjectClassId(student.getId(), subjectClass.getId()));
-//        }
         for (SubjectClass subjectClass : subjectClasses) {
             Enrollment enrollment = enrollmentRepository.findByStudentIdAndSubjectClassId(student.getId(), subjectClass.getId());
             classEnrollmentMap.put(subjectClass, enrollment);  // Add to the map, enrollment could be null if not enrolled

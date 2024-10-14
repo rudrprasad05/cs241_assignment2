@@ -8,8 +8,9 @@ public class Attendance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ATTENDANCE isPresent;
+    private AttendanceType isPresent;
 
     private String excuse;
 
@@ -23,7 +24,7 @@ public class Attendance {
 
     public Attendance() {}
 
-    public Attendance(ATTENDANCE isPresent, String excuse, Student student, Session session) {
+    public Attendance(AttendanceType isPresent, String excuse, Student student, Session session) {
         this.isPresent = isPresent;
         this.excuse = excuse;
         this.student = student;
@@ -38,11 +39,11 @@ public class Attendance {
         this.id = id;
     }
 
-    public ATTENDANCE isPresent() {
+    public AttendanceType isPresent() {
         return isPresent;
     }
 
-    public void setPresent(ATTENDANCE present) {
+    public void setPresent(AttendanceType present) {
         isPresent = present;
     }
 
@@ -70,7 +71,7 @@ public class Attendance {
         this.session = session;
     }
 
-    public enum ATTENDANCE {
+    public enum AttendanceType {
         PRESENT,
         ABSENT,
         LATE,

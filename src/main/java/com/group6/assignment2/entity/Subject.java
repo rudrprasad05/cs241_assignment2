@@ -23,6 +23,17 @@ public class Subject {
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
     private List<SubjectClass> subjectClasses;
 
+    public List<Enrollment> getEnrollments() {
+        return enrollments;
+    }
+
+    public void setEnrollments(List<Enrollment> enrollments) {
+        this.enrollments = enrollments;
+    }
+
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
+    private List<Enrollment> enrollments;
+
     private String description;
 
     public Subject() {}

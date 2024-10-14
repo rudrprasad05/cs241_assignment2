@@ -1,16 +1,15 @@
 package com.group6.assignment2.controllers.subject;
 
 import com.group6.assignment2.config.Link;
-import com.group6.assignment2.entity.Subject;
-import com.group6.assignment2.entity.SubjectClass;
-import com.group6.assignment2.entity.Teacher;
-import com.group6.assignment2.entity.User;
+import com.group6.assignment2.entity.*;
+import com.group6.assignment2.repository.NotificationRepository;
 import com.group6.assignment2.repository.SubjectClassRepository;
 import com.group6.assignment2.repository.SubjectRepository;
 import com.group6.assignment2.repository.TeacherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +32,9 @@ public class SubjectController {
     private SubjectRepository subjectRepository;
     @Autowired
     private SubjectClassRepository subjectClassRepository;
+    @Autowired
+    private NotificationRepository notificationRepository;
+
 
     static List<Link> sideNavLinks = new ArrayList<>();
 
@@ -62,6 +64,7 @@ public class SubjectController {
         // Fetch subject by subject_name from the database
         Subject subject = subjectRepository.findByCode(subject_code);
         List<SubjectClass> subjectClass = subjectClassRepository.findBySubjectCode(subject_code);
+        List<Enrollment> enrollments = subject.getEnrollments();
 
         // Check if subject exists
         if (subject == null) {
@@ -71,6 +74,7 @@ public class SubjectController {
         // Add subject to the model to pass to the view
         addLinks();
         model.addAttribute("sideNavLinks", sideNavLinks);
+        model.addAttribute("enrollments", enrollments);
         model.addAttribute("subject", subject);
         model.addAttribute("subjectClass", subjectClass);
 
@@ -78,12 +82,20 @@ public class SubjectController {
     }
 
     @PostMapping("/admin/subjects/add")
-    public String addSubject(@RequestParam("name") String name, @RequestParam("code") String code, @RequestParam("description") String description, @RequestParam("teacherId") Long teacherId, Model model) {
+    public String addSubject(@RequestParam("name") String name, @RequestParam("code") String code, @RequestParam("description") String description, @RequestParam("teacherId") Long teacherId, Model model, @AuthenticationPrincipal UserDetails userDetails) {
         // Create and save the new subject
         Teacher teacher = teacherRepository.findById(teacherId).orElseThrow(() -> new IllegalArgumentException("Invalid teacher ID: " + teacherId));
 
         Subject subject = new Subject(code, name, teacher, description);
         subjectRepository.save(subject);
+
+        String message = "You have been appointed as the new teacher for the subject " + code;
+        String title = "Welcome!!";
+        Notification.NotificationType notificationType = Notification.NotificationType.INFO;
+        User sender =  userRepository.findByUsername(userDetails.getUsername());
+
+        Notification notification = new Notification(message, title, notificationType, sender, teacher);
+        notificationRepository.save(notification);
 
         return "redirect:/admin/subjects";
 

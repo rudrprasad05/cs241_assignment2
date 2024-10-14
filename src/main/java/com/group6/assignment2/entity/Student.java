@@ -21,7 +21,6 @@ public class Student extends User {
         this.studentId = studentId;
 
     }
-
     public Student() {
         super();
     }

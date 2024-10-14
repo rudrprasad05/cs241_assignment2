@@ -10,6 +10,10 @@ import java.util.UUID;
 @Entity
 public class Enrollment {
 
+    public enum EnrollmentStatus {
+        PENDING, ACCEPTED, REJECTED
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,7 +21,9 @@ public class Enrollment {
     @Column(unique = true, nullable = false)
     private LocalDateTime createdAt;
 
-    private boolean isAccepted = false;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EnrollmentStatus isAccepted;
 
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)
@@ -27,12 +33,25 @@ public class Enrollment {
     @JoinColumn(name = "subject_class_id", nullable = false)  // Foreign key to SubjectClass
     private SubjectClass subjectClass;
 
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "subject_id", nullable = false)  // Foreign key to SubjectClass
+    private Subject subject;
+
     public Enrollment() {}
-    public  Enrollment(Student student, SubjectClass subjectClass) {
+    public  Enrollment(Student student, SubjectClass subjectClass, Subject subject) {
         this.createdAt = LocalDateTime.now();
-        this.isAccepted = false;
+        this.isAccepted = EnrollmentStatus.PENDING;
         this.student = student;
         this.subjectClass = subjectClass;
+        this.subject = subject;
     }
 
     public Long getId() {
@@ -51,11 +70,11 @@ public class Enrollment {
         this.createdAt = createdAt;
     }
 
-    public boolean isAccepted() {
+    public EnrollmentStatus isAccepted() {
         return isAccepted;
     }
 
-    public void setAccepted(boolean accepted) {
+    public void setAccepted(EnrollmentStatus accepted) {
         isAccepted = accepted;
     }
 

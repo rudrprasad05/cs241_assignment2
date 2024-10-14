@@ -34,6 +34,20 @@
         </ul>
     </div>
 
+    <div>
+        <div class="d-flex justify-content-between">
+            <p>Students</p>
+        </div>
+        <p th:if="${enrollments.isEmpty()}">No data available.</p>
+
+        <ul th:if="${!enrollments.isEmpty()}">
+            <li th:each="enrollment : ${enrollments}">
+                <span th:text="${enrollment.getStudent().getStudentId()}"></span>
+                <span th:text="${enrollment.isAccepted().toString() == 'ACCEPTED' ? 'ACCEPTED' : 'PENDING'}"></span>
+            </li>
+        </ul>
+    </div>
+
 </div>
 
 </body>

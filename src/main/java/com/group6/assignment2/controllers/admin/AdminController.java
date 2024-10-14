@@ -2,17 +2,14 @@ package com.group6.assignment2.controllers.admin;
 
 import com.group6.assignment2.config.Link;
 import com.group6.assignment2.config.RedirectionConfig;
-import com.group6.assignment2.entity.InviteLink;
-import com.group6.assignment2.entity.Subject;
-import com.group6.assignment2.entity.Teacher;
-import com.group6.assignment2.entity.User;
-import com.group6.assignment2.repository.InviteLinkRepository;
-import com.group6.assignment2.repository.SubjectRepository;
-import com.group6.assignment2.repository.TeacherRepository;
-import com.group6.assignment2.repository.UserRepository;
+import com.group6.assignment2.entity.*;
+import com.group6.assignment2.repository.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,7 +27,8 @@ public class AdminController {
 
     @Autowired
     private UserRepository userRepository;
-
+    @Autowired
+    private NotificationRepository notificationRepository;
     @Autowired
     private TeacherRepository teacherRepository;
 
@@ -46,13 +44,7 @@ public class AdminController {
     static List<Link> sideNavLinks = new ArrayList<>();
 
     public AdminController() {
-        addLinks();
-    }
-
-    private static void addLinks() {
-        sideNavLinks.clear();
-        sideNavLinks.add(new Link("/admin/subjects", "Subjects"));
-        sideNavLinks.add(new Link("/admin/invite-teacher", "Invite Teacher"));
+        sideNavLinks = Link.addLinks("admin");
     }
 
     @GetMapping("/admin")
@@ -64,7 +56,7 @@ public class AdminController {
 
     @GetMapping("/admin/dashboard")
     public String userDashboard(Model model) {
-        addLinks();
+        sideNavLinks = Link.addLinks("admin");
         model.addAttribute("sideNavLinks", sideNavLinks);
         model.addAttribute("pageTitle", "Admin Dashboard");
         model.addAttribute("message", "Welcome to the Admin Dashboard");
@@ -75,7 +67,7 @@ public class AdminController {
     @GetMapping("/admin/invite-teacher")
     public String inviteTeachersPage(Model model) {
         List<Subject> allSubjects = subjectRepository.findSubjectsWithoutTeacher();
-        addLinks();
+        sideNavLinks = Link.addLinks("admin");
 
         model.addAttribute("sideNavLinks", sideNavLinks);
         model.addAttribute("subjects", allSubjects);
@@ -86,7 +78,7 @@ public class AdminController {
 
     // Handle form submission to invite teachers
     @PostMapping("/admin/invite-teacher")
-    public String inviteTeacher(@RequestParam("password") String password, @RequestParam("fName") String fName, @RequestParam("lName") String lName, Model model) {
+    public String inviteTeacher(@RequestParam("password") String password, @RequestParam("fName") String fName, @RequestParam("lName") String lName, Model model, @AuthenticationPrincipal UserDetails userDetails) {
 
         String tId = generateTeacherId();
         String teacherEmail = tId + "@teacher.com";
@@ -99,6 +91,14 @@ public class AdminController {
         InviteLink inviteLink = new InviteLink();
         inviteLink.setTeacher(teacher);
         inviteLinkRepository.save(inviteLink);
+
+        String message = "You have been invited to join us on our attendance management system";
+        String title = "Welcome!!";
+        Notification.NotificationType notificationType = Notification.NotificationType.INFO;
+        User sender =  userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));;
+
+        Notification notification = new Notification(message, title, notificationType, sender, teacher);
+        notificationRepository.save(notification);
 
         model.addAttribute("inviteLink", "/invite/" + inviteLink.getInviteCode());
 

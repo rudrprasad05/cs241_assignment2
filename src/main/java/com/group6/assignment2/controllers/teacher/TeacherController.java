@@ -43,6 +43,9 @@ public class TeacherController {
     private InviteLinkRepository inviteLinkRepository;
 
     @Autowired
+    private NotificationRepository notificationRepository;
+
+    @Autowired
     private SessionRepository sessionRepository;
 
     @Autowired
@@ -78,6 +81,8 @@ public class TeacherController {
 
         return "teacher/subject-details";  // Refers to src/main/resources/templates/user/dashboard.html
     }
+
+
 
     @GetMapping("/teacher/subjects/{code}/{classId}")
     public String teacherClassSubject(Model model, @PathVariable("code") String code, @PathVariable("classId") String classId, @AuthenticationPrincipal UserDetails userDetails) {
@@ -140,6 +145,7 @@ public class TeacherController {
     private static void addLinks() {
         sideNavLinks.clear();
         sideNavLinks.add(new Link("/teacher/dashboard", "Subjects"));
+        sideNavLinks.add(new Link("/teacher/notifications", "Notifications"));
         sideNavLinks.add(new Link("/teacher/invite-teacher", "Invite Teacher"));
     }
 

@@ -28,9 +28,9 @@
             <!-- Enrollment exists, show appropriate buttons -->
             <div th:if="${entry.value != null}">
                 <button type="button" class="btn btn-success float-right btn-sm"
-                        th:if="${entry.value.isAccepted() == true}" disabled>Enrolled</button>
+                        th:if="${entry.value.isAccepted().toString() == 'ACCEPTED'}" disabled>Enrolled</button>
                 <button type="button" class="btn btn-warning float-right btn-sm"
-                        th:if="${entry.value.isAccepted() == false}" disabled>Pending</button>
+                        th:if="${entry.value.isAccepted().toString() == 'PENDING'}" disabled>Pending</button>
             </div>
         </div>
     </div>
