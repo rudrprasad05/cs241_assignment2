@@ -36,12 +36,11 @@ public class SecurityConfig {
         http
 //                .csrf().disable()
                 .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/", "/auth/**", "/test/**", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/", "/auth/**", "/test/**", "/css/**", "/js/**", "/redirect/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/teacher/**").hasRole("TEACHER")
                         .requestMatchers("/student/**").hasRole("STUDENT")
                         .requestMatchers("/parent/**").hasRole("PARENT")
-
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form

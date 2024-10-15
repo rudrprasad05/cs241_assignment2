@@ -60,14 +60,19 @@ public class StudentDashboardController {
     }
 
     @GetMapping("/student/subjects")
-    public String studentSubjects(Model model) {
+    public String studentSubjects(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        Student student = studentRepository.findByUsername(userDetails.getUsername());
 
         List<Subject> subjects = subjectRepository.findAll();
+        List<Subject> enrolledSubjects = student.getEnrollments().stream()
+                .map(Enrollment::getSubject)
+                .toList();
 
         sideNavLinks = Link.addLinks("student");
 
         model.addAttribute("sideNavLinks", sideNavLinks);
         model.addAttribute("subjects", subjects);
+        model.addAttribute("enrolledSubjects", enrolledSubjects);
         model.addAttribute("pageTitle", "Student Dashboard");
         // Get the authenticated user
         return "student/subjects";

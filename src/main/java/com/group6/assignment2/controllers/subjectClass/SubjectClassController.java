@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 
@@ -25,11 +26,15 @@ public class SubjectClassController {
     private SubjectRepository subjectRepository;
 
     @PostMapping("/admin/subject-class/add")
-    public String addClass(@RequestParam("subjectCode") String subjectCode, @RequestParam("day") String day, @RequestParam("time") String time, @RequestParam("roomCode") String description, Model model) {
+    public String addClass(RedirectAttributes redirectAttributes, @RequestParam("subjectCode") String subjectCode, @RequestParam("day") String day, @RequestParam("time") String time, @RequestParam("roomCode") String description, Model model) {
 
         Subject subject = subjectRepository.findByCode(subjectCode);
         SubjectClass subjectClass = new SubjectClass(day, time, description, subject);
         subjectClassRepository.save(subjectClass);
+
+        redirectAttributes.addFlashAttribute("toastMessage", "New class was created");
+        redirectAttributes.addFlashAttribute("toastType", "success");  // You can send 'success', 'error', etc.
+
 
         return "redirect:/admin/subjects/" + subjectCode;
 

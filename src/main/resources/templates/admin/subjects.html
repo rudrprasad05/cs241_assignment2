@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="layout-dashboard :: head(name='Teacher Dashboard')"></head>
+<head th:replace="layout-dashboard :: head(name='Dashboard')"></head>
 
 <body th:replace="layout-dashboard :: body(sideNavLinks=${sideNavLinks})">
 
 <div th:fragment="main" class="d-flex">
 
     <div class="main container-fluid">
+        <div th:insert="fragments/toast :: toast(type=${toastType}, message=${toastMessage})"></div>
+
         <div class="mt-5">
 
             <section class="d-flex justify-content-between">

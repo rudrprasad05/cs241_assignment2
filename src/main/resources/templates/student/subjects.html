@@ -6,11 +6,44 @@
 <body th:replace="layout-dashboard :: body(sideNavLinks=${sideNavLinks})">
 
 <div th:fragment="main" class="">
-    <div class="main">
-        <h1>Welcome to the User Dashboard</h1>
-        <p>This is the content of the user dashboard.</p>
-    </div>
 
+    <h2>Your current enrolled Subjects</h2>
+    <p th:if="${enrolledSubjects.isEmpty()}">No data available. Join a subject now</p>
+    <table th:if="${!enrolledSubjects.isEmpty()}" class="table align-middle mb-0 bg-white">
+        <thead class="bg-light">
+        <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Teacher</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="subject : ${enrolledSubjects}">
+            <td>
+                <div class="d-flex align-items-center">
+                    <div class="ms-3">
+                        <p class="fw-bold mb-1" th:text="${subject.getCode()}"></p>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <p class="fw-normal mb-1" th:text="${subject.getName()}"></p>
+            </td>
+            <td>
+                <p class="fw-normal mb-1" th:text="${subject.getTeacher().getFName()}"></p>
+            </td>
+            <td>
+                <a th:href="@{'/student/subjects/' + ${subject.code}}" type="button" class="btn btn-link btn-sm btn-rounded">
+                    Details
+                </a>
+            </td>
+        </tr>
+
+        </tbody>
+    </table>
+
+    <h2>Enroll in new ones</h2>
     <table class="table align-middle mb-0 bg-white">
         <thead class="bg-light">
         <tr>
@@ -37,7 +70,7 @@
             </td>
             <td>
                 <a th:href="@{'/student/subjects/' + ${subject.code}}" type="button" class="btn btn-link btn-sm btn-rounded">
-                    Edit
+                    Details
                 </a>
             </td>
         </tr>

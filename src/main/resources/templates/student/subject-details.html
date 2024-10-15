@@ -7,6 +7,9 @@
 
 <div th:fragment="main" class="">
 
+    <div th:insert="fragments/toast :: toast(type=${toastType}, message=${toastMessage})"></div>
+    <p th:if="${classEnrollmentMap.isEmpty()}">No data available.</p>
+
     <div th:each="entry : ${classEnrollmentMap}">
         <div class="card-block">
             <!-- Access SubjectClass via entry.key -->
@@ -14,7 +17,6 @@
             <div class="meta" th:text="${entry.key.getDay()}"></div>
             <div class="card-text" th:text="${entry.key.getTime()}"></div>
 
-            <!-- Access Enrollment via entry.value -->
             <div th:if="${entry.value == null}">
                 <!-- If no enrollment exists, show "Enroll" button -->
                 <form action="/student/enrollment/new" method="post">
@@ -25,7 +27,6 @@
                 </form>
             </div>
 
-            <!-- Enrollment exists, show appropriate buttons -->
             <div th:if="${entry.value != null}">
                 <button type="button" class="btn btn-success float-right btn-sm"
                         th:if="${entry.value.isAccepted().toString() == 'ACCEPTED'}" disabled>Enrolled</button>

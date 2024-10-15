@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="layout-dashboard :: head(name='Teacher Dashboard')"><title>Admin Dashboard</title></head>
+<head th:replace="layout-dashboard :: head(name='Dashboard')"><title>Admin Dashboard</title></head>
 
 <body th:replace="layout-dashboard :: body(sideNavLinks=${sideNavLinks})">
 
 <div th:fragment="main" class="">
 
+    <div th:insert="fragments/toast :: toast(type=${toastType}, message=${toastMessage})"></div>
 
     <div class="main">
         <h1 th:text="${subject.name}">Subject Name</h1>
 
         <!-- Add more details as needed -->
-        <p>Number of Classes: <span th:text="0">0</span></p>
-        <p>Teacher: <span th:text="${subject.user.getFName()} + ' ' + ${subject.user.getLName()}"></span></p>
+        <p>Number of Classes: <span th:text="${subject.getSubjectClasses().size()}"></span></p>
+        <p>Teacher: <span th:text="${subject.teacher.getFName()} + ' ' + ${subject.teacher.getLName()}"></span></p>
 
         <!-- Back to subject list -->
         <a href="/admin/subjects">Back to Subjects List</a>
@@ -43,7 +44,29 @@
         <ul th:if="${!enrollments.isEmpty()}">
             <li th:each="enrollment : ${enrollments}">
                 <span th:text="${enrollment.getStudent().getStudentId()}"></span>
-                <span th:text="${enrollment.isAccepted().toString() == 'ACCEPTED' ? 'ACCEPTED' : 'PENDING'}"></span>
+                <span th:text="${enrollment.isAccepted().toString() == 'ACCEPTED' ? 'ACCEPTED' : (enrollment.isAccepted().toString() == 'PENDING' ? 'PENDING' : 'REJECTED')}"></span>
+
+                <!--show reject button if status is accepted or pending-->
+                <form action="/admin/enrollment/change-status/rejected" method="post" th:if="${enrollment.isAccepted().toString() == 'ACCEPTED' || enrollment.isAccepted().toString() == 'PENDING'}">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <input type="hidden" th:value="${enrollment.id}" name="enrollmentId" />
+                    <button type="submit" class="btn btn-danger">Reject</button>
+                </form>
+
+                <!--show Accept button if status is rejected or pending-->
+                <form action="/admin/enrollment/change-status/accepted" method="post" th:if="${enrollment.isAccepted().toString() == 'PENDING' || enrollment.isAccepted().toString() == 'REJECTED'}">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <input type="hidden" th:value="${enrollment.id}" name="enrollmentId" />
+                    <button type="submit" class="btn btn-success">Accept</button>
+                </form>
+
+                <!--show pending button if status is accepted or rejected (waitlist)-->
+                <form action="/admin/enrollment/change-status/pending" method="post" th:if="${enrollment.isAccepted().toString() == 'ACCEPTED' || enrollment.isAccepted().toString() == 'REJECTED'}">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <input type="hidden" th:value="${enrollment.id}" name="enrollmentId" />
+                    <button type="submit" class="btn btn-warning">Pending</button>
+                </form>
+
             </li>
         </ul>
     </div>

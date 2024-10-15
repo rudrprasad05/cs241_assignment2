@@ -10,6 +10,7 @@ public class Email {
     private Long id;
 
     private String header;
+    @Column(length = 5100)
     private String body;
     private String subject;
     private String sender;

@@ -18,6 +18,12 @@ body{
     margin: 0 auto;
     max-width: 350px;
 }
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1055;
+}
 .container form input[type="text"], .container form textarea{
     width: 100%;
     padding: 10px;

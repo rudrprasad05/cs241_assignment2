@@ -10,6 +10,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -27,12 +29,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         Optional<User> userOptional = userRepository.findByUsername(username);
         User user = userOptional.orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
-        // Store the user in the session
-        request.getSession().setAttribute("currentUser", user);
-
-        request.getSession().setAttribute("toastMessage", "Login successful!");
-        request.getSession().setAttribute("toastTitle", "Success");
-        request.getSession().setAttribute("toastClass", "bg-success");
+        RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
+        redirectAttributes.addFlashAttribute("toastMessage", "Successfully logged in!");
+        redirectAttributes.addFlashAttribute("toastType", "success");
 
         switch (user) {
             case Student student -> response.sendRedirect("/student/dashboard");

@@ -41,6 +41,14 @@ public class Enrollment {
         this.subject = subject;
     }
 
+    public EnrollmentStatus getIsAccepted() {
+        return isAccepted;
+    }
+
+    public void setIsAccepted(EnrollmentStatus isAccepted) {
+        this.isAccepted = isAccepted;
+    }
+
     @ManyToOne
     @JoinColumn(name = "subject_id", nullable = false)  // Foreign key to SubjectClass
     private Subject subject;

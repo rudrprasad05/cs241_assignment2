@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="layout-dashboard :: head(name='Teacher Dashboard')"><title>Admin Dashboard</title></head>
+<head th:replace="layout-dashboard :: head(name='Dashboard')"><title>Admin Dashboard</title></head>
 
 <body th:replace="layout-dashboard :: body(sideNavLinks=${sideNavLinks})">
 
@@ -20,7 +20,7 @@
         </div>
     </div>
 
-    <a href="/user/notifications/send">Send Notifications</a>
+    <a href="/redirect/notification/send">Send Notifications</a>
 </div>
 
 

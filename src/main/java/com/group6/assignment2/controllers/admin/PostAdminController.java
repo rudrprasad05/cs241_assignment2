@@ -17,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ import java.util.Random;
 import java.util.UUID;
 
 @Controller
-public class AdminController {
+public class PostAdminController {
 
     @Autowired
     private UserRepository userRepository;
@@ -46,59 +47,13 @@ public class AdminController {
 
     static List<Link> sideNavLinks = new ArrayList<>();
 
-
-    public AdminController() {
+    public PostAdminController() {
         sideNavLinks = Link.addLinks("admin");
     }
-
-    @GetMapping("/admin")
-    public String routeDashboard(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        User user = (User) request.getSession().getAttribute("currentUser");
-
-        return RedirectionConfig.RedirectToDashboard(user, null, null);
-    }
-
-    @GetMapping("/admin/dashboard")
-    public String userDashboard(Model model) {
-        sideNavLinks = Link.addLinks("admin");
-        model.addAttribute("sideNavLinks", sideNavLinks);
-        model.addAttribute("pageTitle", "Admin Dashboard");
-        model.addAttribute("message", "Welcome to the Admin Dashboard");
-        return "admin/dashboard";  // Refers to src/main/resources/templates/user/dashboard.html
-    }
-
-    // Show invite teacher page
-    @GetMapping("/admin/invite-user")
-    public String inviteUser(Model model) {
-        sideNavLinks = Link.addLinks("admin");
-
-        List<Role> roles = new ArrayList<>(List.of(Role.values()));
-        roles.remove(Role.PARENT);
-
-
-
-        model.addAttribute("sideNavLinks", sideNavLinks);
-
-        model.addAttribute("roles", roles);
-        return "admin/invite-user";
-    }
-
-    @GetMapping("/admin/invite-parent")
-    public String inviteParent(Model model) {
-        sideNavLinks = Link.addLinks("admin");
-
-        List<User> allStudents = userRepository.findAllByRole(Role.STUDENT);
-
-        model.addAttribute("sideNavLinks", sideNavLinks);
-        model.addAttribute("allStudents", allStudents);
-        return "admin/invite-parent";
-    }
-
-
 
     // Handle form submission to invite teachers
     @PostMapping("/admin/invite-user")
-    public String inviteTeacher(@RequestParam("personalEmail") String personalEmail, @RequestParam("password") String password, @RequestParam("fName") String fName, @RequestParam("role") Role role, @RequestParam("lName") String lName, Model model, @AuthenticationPrincipal UserDetails userDetails) {
+    public String inviteTeacher(RedirectAttributes redirectAttributes, @RequestParam("personalEmail") String personalEmail, @RequestParam("password") String password, @RequestParam("fName") String fName, @RequestParam("role") Role role, @RequestParam("lName") String lName, Model model, @AuthenticationPrincipal UserDetails userDetails) {
 
         String id;
         User user;
@@ -132,10 +87,13 @@ public class AdminController {
 
         String inviteLinkCode = createInviteLink(user);
         sendNotification(userDetails, user);
-        sendEmail(personalEmail, inviteLinkCode);
+        sendEmail(id, password, personalEmail, inviteLinkCode);
 
-        model.addAttribute("inviteLink", "/invite/" + inviteLinkCode);
+        redirectAttributes.addFlashAttribute("toastMessage", "User successfully invited");
+        redirectAttributes.addFlashAttribute("toastType", "success");  // You can send 'success', 'error', etc.
 
+        redirectAttributes.addFlashAttribute("inviteLink", "/invite/" + inviteLinkCode);
+        redirectAttributes.addFlashAttribute("successMessage", "The account was created and an Invite was sent");
         return "redirect:/admin/invite-user";
     }
 
@@ -153,17 +111,18 @@ public class AdminController {
 
         String inviteLinkCode = createInviteLink(user);
         sendNotification(userDetails, user);
-        sendEmail(personalEmail, inviteLinkCode);
+        sendEmail(id, password, personalEmail, inviteLinkCode);
 
         model.addAttribute("inviteLink", "/invite/" + inviteLinkCode);
 
         return "redirect:/admin/invite-parent";
     }
 
-    private void sendEmail(String personalEmail, String inviteLinkCode) {
+    private void sendEmail(String username, String unhashedPassword, String personalEmail, String inviteLinkCode) {
         String header = "Hey there! Welcome to our Attendance Tracker";
         String body = "Use this link to verify your email: <a href='localhost:8080/auth/invite" + inviteLinkCode + "'>Invite Link</a> " +
-                "<p>Cant see the code? Copy paste this into your browser http://localhost:8080/auth/invite/" + inviteLinkCode + "</p>";
+                "<p>Cant see the code? Copy paste this into your browser http://localhost:8080/auth/invite/" + inviteLinkCode + "</p>" +
+                "<p>Your credentials are -> Username: " + username + " Password: " + unhashedPassword + "(change after login) </p>";
         String subject = "Invitation Link";
 
         Email email = new Email(header, body, subject, personalEmail);
