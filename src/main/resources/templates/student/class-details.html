@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout-dashboard :: head(name='Student Dashboard')"><title>Admin Dashboard</title></head>
+
+<body th:replace="layout-dashboard :: body(sideNavLinks=${sideNavLinks})">
+
+<div th:fragment="main" class="">
+
+    <div th:insert="fragments/toast :: toast(type=${toastType}, message=${toastMessage})"></div>
+    <p th:if="${classSessionMap.isEmpty()}">No data available.</p>
+
+    <div class="accordion" id="weekAccordion">
+        <div th:each="entry, iterStat : ${classSessionMap}" class="accordion-item">
+            <h2 class="accordion-header" th:id="'heading' + ${iterStat.index}">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        th:data-bs-target="'#collapse' + ${iterStat.index}" aria-expanded="true"
+                        th:aria-controls="'collapse' + ${iterStat.index}">
+                    <span th:text="${'Week ' + entry.key.getWeek()}">Week 1</span>
+                </button>
+            </h2>
+            <div th:id="'collapse' + ${iterStat.index}" class="accordion-collapse collapse"
+                 th:classappend="${iterStat.index == 0} ? 'show'" aria-labelledby="headingOne"
+                 th:data-bs-parent="${'#weekAccordion'}">
+                <div class="accordion-body">
+                    <strong th:text="${entry.key.getWeek()} + ' details:'">Week details:</strong>
+                    <p th:text="${entry.getValue().isPresent()}" class="text-lowercase">Attendance Info</p>
+                    <!-- Add more details here as needed -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

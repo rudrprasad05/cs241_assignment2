@@ -39,8 +39,7 @@ public class Link {
             links.add(new Link("/admin/dashboard", "Dashboard"));
             links.add(new Link("/admin/applications", "Applications"));
             links.add(new Link("/admin/subjects", "Subjects"));
-            links.add(new Link("/admin/invite-user", "Invite User"));
-            links.add(new Link("/admin/invite-parent", "Invite Parent"));
+            links.add(new Link("/admin/invite-user", "Invite"));
             links.add(new Link("/admin/notifications", "Notifications"));
         }
         else if(Objects.equals(type, "parent")){

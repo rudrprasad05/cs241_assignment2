@@ -2,10 +2,7 @@ package com.group6.assignment2.controllers.student;
 
 import com.group6.assignment2.config.Link;
 import com.group6.assignment2.entity.*;
-import com.group6.assignment2.repository.EnrollmentRepository;
-import com.group6.assignment2.repository.StudentRepository;
-import com.group6.assignment2.repository.SubjectRepository;
-import com.group6.assignment2.repository.UserRepository;
+import com.group6.assignment2.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -37,6 +34,10 @@ public class StudentDashboardController {
     private SubjectRepository subjectRepository;
 
     List<Link> sideNavLinks = new ArrayList<>();
+    @Autowired
+    private SubjectClassRepository subjectClassRepository;
+    @Autowired
+    private AttendanceRepository attendanceRepository;
 
     @GetMapping("/student")
     public String redirectToDashboard(Model model) {
@@ -58,6 +59,20 @@ public class StudentDashboardController {
         return "student/dashboard";
 
     }
+
+
+    @GetMapping("/student/notifications")
+    public String studentNotification(Model model, @AuthenticationPrincipal UserDetails userDetails){
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        List<Notification> receivedNotifications = user.getReceivedNotifications();
+
+        model.addAttribute("receivedNotifications", receivedNotifications);
+        model.addAttribute("sideNavLinks", sideNavLinks);
+        model.addAttribute("notificationTypes", Arrays.asList(Notification.NotificationType.values()));
+
+        return "/notifications";  // Refers to src/main/resources/templates/user/dashboard.html
+    }
+
 
     @GetMapping("/student/subjects")
     public String studentSubjects(Model model, @AuthenticationPrincipal UserDetails userDetails) {
@@ -105,18 +120,32 @@ public class StudentDashboardController {
         return "student/subject-details";
     }
 
-    private static void addLinks(List<Link> links) {
-        links.clear();
-        links.add(new Link("/student/dashboard", "Dashboard"));
-        links.add(new Link("/student/subjects", "Subjects"));
-    }
+    @GetMapping("/student/subjects/{subject_code}/{class_code}")
+    public String studentClassDetails(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("subject_code") String subject_code, @PathVariable("class_code") String class_code, Model model) {
+        Long id = Long.parseLong(class_code);
+        Student student = studentRepository.findByUsername(userDetails.getUsername());
+        Subject subject = subjectRepository.findByCode(subject_code);
+        SubjectClass subjectClass = subjectClassRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("Class not found"));
+        List<Session> classSessions = subjectClass.getSessions();
 
-    public List<Enrollment> getFilteredEnrollments(Student s, SubjectClass subjectClassToCheck) {
-        // Filter the enrollments where the subject class matches the one you're checking
-        List<Enrollment> filteredEnrollments = s.getEnrollments().stream()
-                .filter(enrollment -> enrollment.getSubjectClass().equals(subjectClassToCheck))
-                .collect(Collectors.toList());
+        classSessions.sort(Comparator.comparing(Session::getWeek));
 
-        return filteredEnrollments;
+        Map<Session, Attendance> classSessionMap = new LinkedHashMap<>();
+
+        for (Session session : classSessions) {
+            System.out.println(session.getWeek());
+            Attendance attendance = attendanceRepository.findByStudentIdAndSessionId(student.getId(), session.getId());
+            classSessionMap.put(session, attendance);  // Add to the map, enrollment could be null if not enrolled
+        }
+
+        model.addAttribute("sideNavLinks", sideNavLinks);
+        model.addAttribute("subject", subject);
+        model.addAttribute("subjectClass", subjectClass);
+        model.addAttribute("classSessions", classSessions);
+        model.addAttribute("classSessionMap", classSessionMap);
+        model.addAttribute("student", student);
+        model.addAttribute("pageTitle", "Student Dashboard");
+        // Get the authenticated user
+        return "student/class-details";
     }
 }

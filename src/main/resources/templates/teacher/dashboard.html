@@ -16,8 +16,7 @@
             <div>
                 <div th:each="subject : ${subjects}" class="course">
                     <h3 th:text="${subject.name}"></h3>
-<!--                    <a th:href="@{/user/subjects/${subject.getCode()}}">View</a>-->
-                    <a th:href="@{/user/subjects/{code}(code=${subject.getCode()})}">View</a>
+                    <a th:href="@{/teacher/subjects/{code}(code=${subject.getCode()})}">View</a>
                 </div>
             </div>
 

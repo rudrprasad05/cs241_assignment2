@@ -34,7 +34,7 @@ public class Session {
         this.id = id;
     }
 
-    public int getWeek() {
+    public Integer getWeek() {
         return week;
     }
 

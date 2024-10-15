@@ -19,10 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 public class GetAdminController {
@@ -80,23 +77,66 @@ public class GetAdminController {
     @GetMapping("/admin/invite-user")
     public String inviteUser(Model model) {
         List<Role> roles = new ArrayList<>(List.of(Role.values()));
+        List<User> allStudents = userRepository.findAllByRole(Role.STUDENT);
         roles.remove(Role.PARENT);
 
         model.addAttribute("sideNavLinks", sideNavLinks);
 
+        model.addAttribute("allStudents", allStudents);
         model.addAttribute("roles", roles);
         return "admin/invite-user";
     }
 
-    @GetMapping("/admin/invite-parent")
-    public String inviteParent(Model model) {
-        List<User> allStudents = userRepository.findAllByRole(Role.STUDENT);
+    @GetMapping("/admin/notifications")
+    public String adminNotification(Model model, @AuthenticationPrincipal UserDetails userDetails){
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        List<Notification> receivedNotifications = user.getReceivedNotifications();
 
+        model.addAttribute("receivedNotifications", receivedNotifications);
         model.addAttribute("sideNavLinks", sideNavLinks);
-        model.addAttribute("allStudents", allStudents);
-        return "admin/invite-parent";
+        model.addAttribute("notificationTypes", Arrays.asList(Notification.NotificationType.values()));
+
+        return "/notifications";  // Refers to src/main/resources/templates/user/dashboard.html
     }
 
+
+    @GetMapping("/admin/notifications/send")
+    public String adminSendNotification(Model model, @AuthenticationPrincipal UserDetails userDetails){
+
+        Admin admin = (Admin) userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        List<Notification> receivedNotifications = admin.getReceivedNotifications();
+
+        List<User> receivers = getEligibleReceivers(admin);
+
+        model.addAttribute("receivers", receivers);
+        model.addAttribute("receivedNotifications", receivedNotifications);
+        model.addAttribute("sideNavLinks", sideNavLinks);
+        model.addAttribute("notificationTypes", Arrays.asList(Notification.NotificationType.values()));
+
+        return "admin/sendNotifications";  // Refers to src/main/resources/templates/user/dashboard.html
+    }
+
+    private List<User> getEligibleReceivers(User user) {
+        // Fetch students and admins associated with subjects the teacher is teaching
+        List<Subject> subjects = subjectRepository.findByTeacher(user.getId());
+
+        List<User> eligibleReceivers = new ArrayList<>();
+        List<Enrollment> enrollments = new ArrayList<>();
+
+        for (Subject subject : subjects) {
+            enrollments.addAll(subject.getEnrollments()); // Assuming subjects track enrolled students
+        }
+
+        for (Enrollment enrollment : enrollments) {
+            eligibleReceivers.add(enrollment.getStudent());
+        }
+
+        // Also fetch all admins (if needed)
+        List<User> admins = userRepository.findByRole(Role.ADMIN);
+        eligibleReceivers.addAll(admins);
+
+        return eligibleReceivers;
+    }
 
 
 }

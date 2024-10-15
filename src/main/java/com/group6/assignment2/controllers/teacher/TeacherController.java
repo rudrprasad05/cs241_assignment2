@@ -18,10 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Controller
 public class TeacherController {
@@ -51,7 +48,14 @@ public class TeacherController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private AttendanceRepository attendanceRepository;
+
     static List<Link> sideNavLinks = new ArrayList<>();
+
+    public TeacherController() {
+        sideNavLinks = Link.addLinks("teacher");
+    }
 
 
     @GetMapping("/teacher/dashboard")
@@ -62,9 +66,7 @@ public class TeacherController {
         List<Subject> subjects = teacher.getSubjects();
         model.addAttribute("subjects", subjects);
 
-        addLinks();
         model.addAttribute("sideNavLinks", sideNavLinks);
-
 
         return "teacher/dashboard";  // Refers to src/main/resources/templates/user/dashboard.html
     }
@@ -74,7 +76,7 @@ public class TeacherController {
 
         Subject subject = subjectRepository.findByCode(code);
         User teacher = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        addLinks();
+
         model.addAttribute("subject", subject);
         model.addAttribute("sideNavLinks", sideNavLinks);
 
@@ -84,6 +86,36 @@ public class TeacherController {
 
 
 
+    @GetMapping("/teacher/notifications/send")
+    public String teacherSendNotification(Model model, @AuthenticationPrincipal UserDetails userDetails){
+
+        Teacher teacher = (Teacher) userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        List<Notification> receivedNotifications = teacher.getReceivedNotifications();
+
+        List<User> receivers = getEligibleReceivers(teacher);
+
+        model.addAttribute("receivers", receivers);
+        model.addAttribute("receivedNotifications", receivedNotifications);
+        model.addAttribute("sideNavLinks", sideNavLinks);
+        model.addAttribute("notificationTypes", Arrays.asList(Notification.NotificationType.values()));
+
+
+        return "teacher/sendNotifications";  // Refers to src/main/resources/templates/user/dashboard.html
+    }
+
+
+    @GetMapping("/teacher/notifications")
+    public String teacherNotification(Model model, @AuthenticationPrincipal UserDetails userDetails){
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        List<Notification> receivedNotifications = user.getReceivedNotifications();
+
+        model.addAttribute("receivedNotifications", receivedNotifications);
+        model.addAttribute("sideNavLinks", sideNavLinks);
+        model.addAttribute("notificationTypes", Arrays.asList(Notification.NotificationType.values()));
+
+        return "/notifications";  // Refers to src/main/resources/templates/user/dashboard.html
+    }
+
     @GetMapping("/teacher/subjects/{code}/{classId}")
     public String teacherClassSubject(Model model, @PathVariable("code") String code, @PathVariable("classId") String classId, @AuthenticationPrincipal UserDetails userDetails) {
 
@@ -91,11 +123,14 @@ public class TeacherController {
         SubjectClass subjectClass = subjectClassRepository.findByCode(classId);
         User teacher = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        addLinks();
         model.addAttribute("subject", subject);
         model.addAttribute("subjectClass", subjectClass);
         model.addAttribute("sessionClass", subjectClass.getSessions());
         model.addAttribute("sideNavLinks", sideNavLinks);
+
+        Map<Session, Attendance> classSessionMap = new LinkedHashMap<>();
+        List<Session> classSessions = subjectClass.getSessions();
+
 
 
         return "teacher/class-details";  // Refers to src/main/resources/templates/user/dashboard.html
@@ -112,11 +147,6 @@ public class TeacherController {
         List<Attendance> attendanceRecords = session.getAttendanceRecords();
         User teacher = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        addLinks();
-
-        for(Attendance attendanceRecord : attendanceRecords) {
-            System.out.println(attendanceRecord.isPresent());
-        }
         model.addAttribute("subject", subject);
         model.addAttribute("attendanceRecords", attendanceRecords);
         model.addAttribute("subjectClass", subjectClass);
@@ -142,11 +172,26 @@ public class TeacherController {
         return null;
     }
 
-    private static void addLinks() {
-        sideNavLinks.clear();
-        sideNavLinks.add(new Link("/teacher/dashboard", "Subjects"));
-        sideNavLinks.add(new Link("/teacher/notifications", "Notifications"));
-        sideNavLinks.add(new Link("/teacher/invite-teacher", "Invite Teacher"));
+    private List<User> getEligibleReceivers(User user) {
+        // Fetch students and admins associated with subjects the teacher is teaching
+        List<Subject> subjects = subjectRepository.findByTeacher(user.getId());
+
+        List<User> eligibleReceivers = new ArrayList<>();
+        List<Enrollment> enrollments = new ArrayList<>();
+
+        for (Subject subject : subjects) {
+            enrollments.addAll(subject.getEnrollments()); // Assuming subjects track enrolled students
+        }
+
+        for (Enrollment enrollment : enrollments) {
+            eligibleReceivers.add(enrollment.getStudent());
+        }
+
+        // Also fetch all admins (if needed)
+        List<User> admins = userRepository.findByRole(Role.ADMIN);
+        eligibleReceivers.addAll(admins);
+
+        return eligibleReceivers;
     }
 
 

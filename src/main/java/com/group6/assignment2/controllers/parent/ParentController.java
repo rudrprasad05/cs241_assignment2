@@ -58,6 +58,18 @@ public class ParentController {
         return "parent/dashboard";
 
     }
+    @GetMapping("/parent/notifications")
+    public String parentNotification(Model model, @AuthenticationPrincipal UserDetails userDetails){
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        List<Notification> receivedNotifications = user.getReceivedNotifications();
+
+        model.addAttribute("receivedNotifications", receivedNotifications);
+        model.addAttribute("sideNavLinks", sideNavLinks);
+        model.addAttribute("notificationTypes", Arrays.asList(Notification.NotificationType.values()));
+
+        return "/notifications";  // Refers to src/main/resources/templates/user/dashboard.html
+    }
+
 
     @GetMapping("/parent/subjects")
     public String studentSubjects(Model model) {
