@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -55,6 +56,7 @@ public class AttendanceController {
 
     @PostMapping("/teacher/attendance/update")
     public String addClass(
+            RedirectAttributes redirectAttributes,
             @RequestParam("attendanceId") String attendanceId,
             @RequestParam("attendanceStatus") Attendance.AttendanceType attendanceStatus,
             @AuthenticationPrincipal UserDetails userDetails,
@@ -68,6 +70,10 @@ public class AttendanceController {
 
         // Save the updated attendance record
         attendanceRepository.save(attendance);
+
+        redirectAttributes.addFlashAttribute("toastMessage", "Attendance Updated Successfully");
+        redirectAttributes.addFlashAttribute("toastType", "success");  // You can send 'success', 'error', etc.
+
 
         // Redirect back to the referring page
         String referer = request.getHeader("Referer");

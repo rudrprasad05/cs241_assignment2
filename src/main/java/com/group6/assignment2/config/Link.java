@@ -28,19 +28,23 @@ public class Link {
             links.add(new Link("/student/dashboard", "Dashboard"));
             links.add(new Link("/student/subjects", "Subjects"));
             links.add(new Link("/student/notifications", "Notifications"));
+            links.add(new Link("/student/profile", "Profile"));
+
 
         }
         else if(Objects.equals(type, "teacher")){
             links.add(new Link("/teacher/dashboard", "Dashboard"));
+            links.add(new Link("/teacher/subjects", "My Subjects"));
             links.add(new Link("/teacher/notifications", "Notifications"));
-            links.add(new Link("/teacher/invite-teacher", "Invite Teacher"));
+            links.add(new Link("/teacher/profile", "Profile"));
         }
         else if(Objects.equals(type, "admin")){
             links.add(new Link("/admin/dashboard", "Dashboard"));
-            links.add(new Link("/admin/applications", "Applications"));
             links.add(new Link("/admin/subjects", "Subjects"));
             links.add(new Link("/admin/invite-user", "Invite"));
+            links.add(new Link("/admin/users", "Users"));
             links.add(new Link("/admin/notifications", "Notifications"));
+            links.add(new Link("/admin/profile", "Profile"));
         }
         else if(Objects.equals(type, "parent")){
             links.add(new Link("/parent/dashboard", "Dashboard"));

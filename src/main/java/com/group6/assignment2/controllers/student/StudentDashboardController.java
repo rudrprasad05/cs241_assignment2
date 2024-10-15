@@ -39,6 +39,11 @@ public class StudentDashboardController {
     @Autowired
     private AttendanceRepository attendanceRepository;
 
+    public StudentDashboardController() {
+        sideNavLinks = Link.addLinks("student");
+
+    }
+
     @GetMapping("/student")
     public String redirectToDashboard(Model model) {
         return "redirect:/student/dashboard";
@@ -80,10 +85,10 @@ public class StudentDashboardController {
 
         List<Subject> subjects = subjectRepository.findAll();
         List<Subject> enrolledSubjects = student.getEnrollments().stream()
+                .filter(e -> e.isAccepted() == Enrollment.EnrollmentStatus.ACCEPTED)
                 .map(Enrollment::getSubject)
                 .toList();
 
-        sideNavLinks = Link.addLinks("student");
 
         model.addAttribute("sideNavLinks", sideNavLinks);
         model.addAttribute("subjects", subjects);
@@ -95,7 +100,6 @@ public class StudentDashboardController {
 
     @GetMapping("/student/subjects/{subject_code}")
     public String studentSubjectDetails(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("subject_code") String subject_code, Model model) {
-        sideNavLinks = Link.addLinks("student");
 
         Student student = studentRepository.findByUsername(userDetails.getUsername());
         Subject subject = subjectRepository.findByCode(subject_code);
@@ -133,7 +137,6 @@ public class StudentDashboardController {
         Map<Session, Attendance> classSessionMap = new LinkedHashMap<>();
 
         for (Session session : classSessions) {
-            System.out.println(session.getWeek());
             Attendance attendance = attendanceRepository.findByStudentIdAndSessionId(student.getId(), session.getId());
             classSessionMap.put(session, attendance);  // Add to the map, enrollment could be null if not enrolled
         }

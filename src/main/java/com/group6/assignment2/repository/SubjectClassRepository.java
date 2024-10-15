@@ -21,4 +21,5 @@ public interface SubjectClassRepository extends JpaRepository<SubjectClass, Long
     @Query("SELECT s FROM SubjectClass s WHERE s.subject.code = :code")
     List<SubjectClass> findBySubjectCode(@Param("code") String code);
 
+
 }

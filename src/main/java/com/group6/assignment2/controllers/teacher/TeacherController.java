@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 public class TeacherController {
@@ -49,7 +50,7 @@ public class TeacherController {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private AttendanceRepository attendanceRepository;
+    private EnrollmentRepository enrollmentRepository;
 
     static List<Link> sideNavLinks = new ArrayList<>();
 
@@ -70,6 +71,20 @@ public class TeacherController {
 
         return "teacher/dashboard";  // Refers to src/main/resources/templates/user/dashboard.html
     }
+
+    @GetMapping("/teacher/subjects")
+    public String teacherSubjects(Model model) {
+
+        Teacher teacher = getLoggedTeacher();  // Implement method to get logged-in teacher
+        assert teacher != null;
+        List<Subject> subjects = teacher.getSubjects();
+        model.addAttribute("subjects", subjects);
+
+        model.addAttribute("sideNavLinks", sideNavLinks);
+
+        return "teacher/my-subjects";  // Refers to src/main/resources/templates/user/dashboard.html
+    }
+
 
     @GetMapping("/teacher/subjects/{code}")
     public String teacherSubject(Model model, @PathVariable("code") String code, @AuthenticationPrincipal UserDetails userDetails) {
@@ -123,38 +138,67 @@ public class TeacherController {
         SubjectClass subjectClass = subjectClassRepository.findByCode(classId);
         User teacher = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
+        List<Enrollment> enrollments = subjectClass.getEnrollments();
+        List<Student> enrolledStudents = enrollments.stream()
+                .filter(e -> e.isAccepted() == Enrollment.EnrollmentStatus.ACCEPTED)
+                .map(Enrollment::getStudent)
+                .toList();
+
         model.addAttribute("subject", subject);
         model.addAttribute("subjectClass", subjectClass);
         model.addAttribute("sessionClass", subjectClass.getSessions());
+        model.addAttribute("enrolledStudents", enrolledStudents);
         model.addAttribute("sideNavLinks", sideNavLinks);
 
         Map<Session, Attendance> classSessionMap = new LinkedHashMap<>();
         List<Session> classSessions = subjectClass.getSessions();
 
-
-
         return "teacher/class-details";  // Refers to src/main/resources/templates/user/dashboard.html
     }
 
-    @GetMapping("/teacher/subjects/{code}/{classId}/{classSessionId}")
-    public String teacherClassSubjectSession(Model model, @PathVariable("code") String code, @PathVariable("classId") String classId, @PathVariable("classSessionId") String classSessionId, @AuthenticationPrincipal UserDetails userDetails) {
+    @GetMapping("/teacher/subjects/{code}/{classId}/attendance")
+    public String teacherClassSubjectAttendance(
+            Model model,
+            @PathVariable("code") String code,
+            @PathVariable("classId") String classId,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
 
         Subject subject = subjectRepository.findByCode(code);
         SubjectClass subjectClass = subjectClassRepository.findByCode(classId);
 
-        Session session = sessionRepository.findBySessionId(classSessionId);
-
-        List<Attendance> attendanceRecords = session.getAttendanceRecords();
-        User teacher = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        List<Session> sessions = subjectClass.getSessions();
 
         model.addAttribute("subject", subject);
-        model.addAttribute("attendanceRecords", attendanceRecords);
         model.addAttribute("subjectClass", subjectClass);
-        model.addAttribute("session", session);
+        model.addAttribute("sessions", sessions);
         model.addAttribute("sideNavLinks", sideNavLinks);
 
 
-        return "teacher/session-details";  // Refers to src/main/resources/templates/user/dashboard.html
+
+        return "teacher/view-attendance";  // Refers to src/main/resources/templates/user/dashboard.html
+    }
+
+    public Map<Session, List<Attendance>> getSessionsWithAcceptedAttendances(SubjectClass subjectClass) {
+        // Fetch all sessions for the given subject class, sorted by week
+        List<Session> sessions = sessionRepository.findBySubjectClassOrderByWeekAsc(subjectClass);
+
+        // Initialize a map to hold sessions and their associated attendance records
+        Map<Session, List<Attendance>> sessionAttendanceMap = new HashMap<>();
+
+        // For each session, get the attendance records and filter by accepted enrollments
+        for (Session session : sessions) {
+            List<Attendance> attendances = session.getAttendanceRecords().stream()
+                    .filter(att -> {
+                        Enrollment enrollment = enrollmentRepository.findByStudentAndSubjectClass(att.getStudent(), subjectClass);
+                        return enrollment != null && enrollment.isAccepted() == Enrollment.EnrollmentStatus.ACCEPTED;
+                    })
+                    .collect(Collectors.toList());
+
+            sessionAttendanceMap.put(session, attendances);
+        }
+
+        return sessionAttendanceMap;
     }
 
     private Teacher getLoggedTeacher() {

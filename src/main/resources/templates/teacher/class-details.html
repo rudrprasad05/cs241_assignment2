@@ -7,32 +7,16 @@
 
 <div th:fragment="main" class="">
 
-    <div class="accordion" id="weekAccordion">
-        <div th:each="classSession, iterStat : ${sessionClass}" class="accordion-item">
-            <h2 class="accordion-header" th:id="'heading' + ${iterStat.index}">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                        th:data-bs-target="'#collapse' + ${iterStat.index}" aria-expanded="true"
-                        th:aria-controls="'collapse' + ${iterStat.index}">
-                    <span th:text="${'Week ' + classSession.getWeek()}">Week 1</span>
-                </button>
-            </h2>
-            <div th:id="'collapse' + ${iterStat.index}" class="accordion-collapse collapse"
-                 th:classappend="${iterStat.index == 0} ? 'show'" aria-labelledby="headingOne"
-                 th:data-bs-parent="${'#weekAccordion'}">
-                <div class="accordion-body d-flex w-100 border-bottom border-light" th:each="attendance : ${classSession.getAttendanceRecords()}">
-                    <strong th:text="${attendance.getStudent().getUsername()}">Week details:</strong>
-                    <p th:text="${attendance.isPresent()}" class="text-lowercase">Attendance Info</p>
+    <div th:insert="fragments/toast :: toast(type=${toastType}, message=${toastMessage})"></div>
 
-                    <button class="ml-auto btn btn-primary" data-bs-toggle="modal" th:attr="data-bs-target='#modal-' + ${attendance.getId()}">Update</button>
-                    <div th:replace="modals/updateStudentAttendance :: modal(id=${attendance.getId()}, attendance=${attendance})" class="modal fade" th:id="'modal-' + ${id}" tabindex="-1" role="dialog" aria-labelledby="updateStudentAttendance" aria-hidden="true"></div>
+    <a th:href="@{'/teacher/subjects/' + ${subject.getCode()} + '/' + ${subjectClass.getId()} + '/attendance'}">View Attendance</a>
 
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
+    <h2>Students</h2>
+    <ul>
+        <li th:each="student: ${enrolledStudents}">
+            <span th:text="${student.getUsername()}"></span>
+        </li>
+    </ul>
 </div>
 
 </body>

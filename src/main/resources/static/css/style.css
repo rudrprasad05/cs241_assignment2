@@ -3,14 +3,8 @@
     margin: 0;
     box-sizing: border-box;
 }
-body{
+body {
     font-family: sans-serif;
-}
-.container {
-    width: 100vw;
-    height: 100vh;
-    padding: 100px 0;
-    text-align: center;
 }
 .container form{
     width: 100%;
@@ -111,4 +105,36 @@ body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
     body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
         margin-left: -15rem;
     }
+}
+
+.no-data-box {
+    background-color: #f8f9fa;  /* Light grey background */
+    border: 2px dotted #6c757d; /* Dotted border, grey color */
+    border-radius: 8px;         /* Rounded corners */
+    height: 120px;              /* Fixed height */
+    width: 100%;
+    opacity: 50%;
+    margin: 20px 0;
+}
+
+.card-link {
+    background-color: #007bff; /* Primary blue background */
+    color: #fff;               /* White text */
+    text-align: center;        /* Center the text */
+    padding: 30px;             /* Space inside the cards */
+    flex-grow: 1;              /* Width and height to make square */
+    height: 150px;
+    border-radius: 10px;       /* Rounded corners */
+    text-decoration: none;     /* Remove underline from links */
+    display: flex;
+    flex-direction: column;/* Flex to center content */
+    justify-content: center;
+    gap: 10px;
+    align-items: center;
+    transition: 0.2s;
+}
+
+.card-link:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    color: #fff;
 }

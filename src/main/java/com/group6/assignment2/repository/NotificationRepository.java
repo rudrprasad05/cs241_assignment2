@@ -12,4 +12,7 @@ import org.springframework.stereotype.Repository;
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     @Query("SELECT n FROM Notification n WHERE n.receiver.id = :id")
     Notification findByReceiverId(@Param("id") Long id);
+
+    @Query("SELECT COUNT(n) FROM Notification n WHERE n.isSeen = false AND n.receiver.id = :receiverId")
+    Long countUnseenNotificationsByReceiver(@Param("receiverId") Long receiverId);
 }

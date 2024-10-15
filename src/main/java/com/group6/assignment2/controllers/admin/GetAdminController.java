@@ -2,12 +2,12 @@ package com.group6.assignment2.controllers.admin;
 
 import com.group6.assignment2.config.Link;
 import com.group6.assignment2.config.RedirectionConfig;
-import com.group6.assignment2.controllers.EmailController;
 import com.group6.assignment2.entity.*;
 import com.group6.assignment2.repository.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,8 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.util.*;
@@ -54,22 +52,32 @@ public class GetAdminController {
         return RedirectionConfig.RedirectToDashboard(user, null, null);
     }
 
-    @GetMapping("/admin/applications")
+    @GetMapping("/admin/users")
     public String adminApplications(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        List<User> allUsers = userRepository.findAll();
+        allUsers.sort(Comparator.comparing(User::getId));
+
         model.addAttribute("sideNavLinks", sideNavLinks);
+        model.addAttribute("allUsers", allUsers);
         model.addAttribute("pageTitle", "Admin Dashboard");
         model.addAttribute("message", "Welcome to the Admin Dashboard");
 
-        return "admin/applications";
+        return "/admin/users";
 
     }
 
 
     @GetMapping("/admin/dashboard")
-    public String userDashboard(Model model) {
+    public String userDashboard(Model model, Authentication authentication) {
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        long userCount = studentRepository.count();
+        long notificationCount = notificationRepository.countUnseenNotificationsByReceiver(user.getId());
         model.addAttribute("sideNavLinks", sideNavLinks);
         model.addAttribute("pageTitle", "Admin Dashboard");
-        model.addAttribute("message", "Welcome to the Admin Dashboard");
+        model.addAttribute("user", user);
+        model.addAttribute("notificationCount", notificationCount);
+        model.addAttribute("userCount", userCount);
         return "admin/dashboard";  // Refers to src/main/resources/templates/user/dashboard.html
     }
 

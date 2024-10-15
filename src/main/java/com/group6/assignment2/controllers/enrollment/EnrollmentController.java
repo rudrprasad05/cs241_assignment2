@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 
@@ -44,35 +45,11 @@ public class EnrollmentController {
         enrollmentRepository.save(enrollment);
 
 
-        List<Session> sessionsList = subjectClass.getSessions();
-
-        for(Session session : sessionsList) {
-            Attendance attendance = new Attendance(Attendance.AttendanceType.NOT_MARKED, "n/a", student, session);
-            attendanceRepository.save(attendance);
-        }
-
         redirectAttributes.addFlashAttribute("toastMessage", "You have joined this class");
         redirectAttributes.addFlashAttribute("toastType", "success");  // You can send 'success', 'error', etc.
 
 
         return "redirect:/student/subjects/" + subjectClass.getSubject().getCode();
-
-    }
-
-    @PostMapping("/admin/enrollment/change-status/pending")
-    public String pending(RedirectAttributes redirectAttributes, @RequestParam("enrollmentId") String enrollmentId) {
-
-        Long id = Long.parseLong(enrollmentId);
-        Enrollment enrollment = enrollmentRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("Enrollment not found"));
-        enrollment.setAccepted(Enrollment.EnrollmentStatus.PENDING);
-
-        enrollmentRepository.save(enrollment);
-
-        redirectAttributes.addFlashAttribute("toastMessage", "Enrollment Status changed to pending");
-        redirectAttributes.addFlashAttribute("toastType", "success");  // You can send 'success', 'error', etc.
-
-
-        return "redirect:/admin/subjects/" + enrollment.getSubject().getCode();
 
     }
 
@@ -84,6 +61,13 @@ public class EnrollmentController {
         enrollment.setAccepted(Enrollment.EnrollmentStatus.ACCEPTED);
 
         enrollmentRepository.save(enrollment);
+
+        List<Session> sessionsList = enrollment.getSubjectClass().getSessions();
+
+        for(Session session : sessionsList) {
+            Attendance attendance = new Attendance(Attendance.AttendanceType.NOT_MARKED, "n/a", enrollment.getStudent(), session);
+            attendanceRepository.save(attendance);
+        }
 
         redirectAttributes.addFlashAttribute("toastMessage", "Enrollment Status changed to accepted");
         redirectAttributes.addFlashAttribute("toastType", "success");  // You can send 'success', 'error', etc.
@@ -101,6 +85,17 @@ public class EnrollmentController {
         enrollment.setAccepted(Enrollment.EnrollmentStatus.REJECTED);
 
         enrollmentRepository.save(enrollment);
+
+        List<Session> sessionsList = enrollment.getSubjectClass().getSessions();
+        for(Session session : sessionsList) {
+            for(Attendance a : session.getAttendanceRecords()){
+                if(Objects.equals(a.getStudent(), enrollment.getStudent())){
+                    System.out.println("delelledddd");
+                    attendanceRepository.delete(a);
+                }
+            }
+        }
+//        attendanceRepository.deleteByStudentAndSessions(enrollment.getStudent(), enrollment.getSubjectClass().getSessions());
 
         redirectAttributes.addFlashAttribute("toastMessage", "Enrollment Status changed to rejected");
         redirectAttributes.addFlashAttribute("toastType", "success");  // You can send 'success', 'error', etc.
