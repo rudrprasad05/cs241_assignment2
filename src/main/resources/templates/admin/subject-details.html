@@ -23,13 +23,17 @@
     <div>
         <div class="d-flex justify-content-between">
             <p>Classes</p>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addClassModal">Add Subject</button>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addClassModal">Add Class</button>
         </div>
-        <th:block th:replace="modals/addClassModal :: modal(id=${'addClassModal'}, subjectCode=${subject.getCode()})">modal</th:block>
+        <th:block th:replace="modals/addClassModal :: modal(id=${'addClassModal'}, subjectCode=${subject.getCode()}, periods=${periods})">modal</th:block>
         <p th:if="${subjectClass.isEmpty()}">No data available.</p>
 
         <ul th:if="${!subjectClass.isEmpty()}">
             <li th:each="class : ${subjectClass}">
+                <span th:text="${class.getDay()}"></span>
+                <span> -> Period: </span>
+                <span th:text="${class.getPeriod().getId()}"></span>
+                <span th:text="${class.getPeriod().getTime()}+'am'"></span>
                 <span th:text="${class.roomCode}"></span>
             </li>
         </ul>

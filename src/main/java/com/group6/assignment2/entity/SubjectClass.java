@@ -13,7 +13,10 @@ public class SubjectClass {
     private Long id;
 
     private String day;  // Updated to LocalDateTime
-    private String time;
+
+    @ManyToOne
+    @JoinColumn(name = "period_id", nullable = false)
+    private Period period;
     private String roomCode;
 
     @ManyToOne
@@ -34,9 +37,9 @@ public class SubjectClass {
     @OneToMany(mappedBy = "subjectClass", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Session> sessions;
 
-    public SubjectClass(String day, String time, String roomCode, Subject subject) {
+    public SubjectClass(String day, Period time, String roomCode, Subject subject) {
         this.day = day;
-        this.time = time;
+        this.period = time;
         this.roomCode = roomCode;
         this.subject = subject;
 
@@ -79,12 +82,12 @@ public class SubjectClass {
         this.day = day;
     }
 
-    public String getTime() {
-        return time;
+    public Period getPeriod() {
+        return period;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setPeriod(Period period) {
+        this.period = period;
     }
 
     public String getRoomCode() {

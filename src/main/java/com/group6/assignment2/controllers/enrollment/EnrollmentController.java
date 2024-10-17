@@ -33,17 +33,27 @@ public class EnrollmentController {
 
     @Autowired
     private AttendanceRepository attendanceRepository;
+    @Autowired
+    private AdminRepository adminRepository;
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     @PostMapping("/student/enrollment/new")
     public String addClass(RedirectAttributes redirectAttributes, @RequestParam("subjectClassId") String subjectClassId, @AuthenticationPrincipal UserDetails userDetails) {
 
         Student student = studentRepository.findByUsername(userDetails.getUsername());
+        Admin admin = adminRepository.findByUsername("admin");
         SubjectClass subjectClass = subjectClassRepository.findByCode(subjectClassId);
         Subject subject = subjectClass.getSubject();
 
         Enrollment enrollment = new Enrollment(student, subjectClass, subject);
         enrollmentRepository.save(enrollment);
 
+        String title = "A new enrollment has been created!";
+        String message = "Check the subject - " + subject.getCode() + "\nUsername - " + student.getUsername();
+        Notification notification = new Notification(message, title, Notification.NotificationType.INFO, student, admin);
+
+        notificationRepository.save(notification);
 
         redirectAttributes.addFlashAttribute("toastMessage", "You have joined this class");
         redirectAttributes.addFlashAttribute("toastType", "success");  // You can send 'success', 'error', etc.
@@ -95,7 +105,7 @@ public class EnrollmentController {
                 }
             }
         }
-//        attendanceRepository.deleteByStudentAndSessions(enrollment.getStudent(), enrollment.getSubjectClass().getSessions());
+//        attendanceRepository.deleteByStudentAndSessions(enrollment.getStudent(), enrollment.getSubjectClass().getSubjectClasses());
 
         redirectAttributes.addFlashAttribute("toastMessage", "Enrollment Status changed to rejected");
         redirectAttributes.addFlashAttribute("toastType", "success");  // You can send 'success', 'error', etc.

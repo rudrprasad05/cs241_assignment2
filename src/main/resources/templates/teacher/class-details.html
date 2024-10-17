@@ -12,7 +12,8 @@
     <a th:href="@{'/teacher/subjects/' + ${subject.getCode()} + '/' + ${subjectClass.getId()} + '/attendance'}">View Attendance</a>
 
     <h2>Students</h2>
-    <ul>
+    <div class="no-data-box d-flex" th:if="${#lists.isEmpty(enrolledStudents)}"><p class="mx-auto my-auto">No students enrolled</p></div>
+    <ul th:if="${!#lists.isEmpty(enrolledStudents)}">
         <li th:each="student: ${enrolledStudents}">
             <span th:text="${student.getUsername()}"></span>
         </li>

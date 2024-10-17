@@ -15,7 +15,7 @@
             <!-- Access SubjectClass via entry.key -->
             <h4 class="card-title mt-3" th:text="${entry.key.getRoomCode()}"></h4>
             <div class="meta" th:text="${entry.key.getDay()}"></div>
-            <div class="card-text" th:text="${entry.key.getTime()}"></div>
+            <div class="card-text" th:text="${entry.key.getPeriod().getTime()}"></div>
             <a th:href="@{'/student/subjects/'+ ${entry.getKey().getSubject().getCode()} + '/' + ${entry.getKey().getId()}}" class="card-text" >View Class</a>
 
             <div th:if="${entry.value == null}">

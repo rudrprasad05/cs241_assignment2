@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout-dashboard :: head(name='Admin Dashboard')"></head>
+
+<body th:replace="layout-dashboard :: body(sideNavLinks=${sideNavLinks})">
+
+<div th:fragment="main" class="">
+
+    <div class="main">
+        <h1>User</h1>
+        <a th:href="@{'/admin/users/' + ${user.getId()} + '/edit'}">Edit</a>
+    </div>
+
+    <p class="fw-normal mb-1" th:text="${user.getUsername()}"></p>
+
+    <p class="fw-normal mb-1" th:text="${user.getRole()}"></p>
+
+    <p class="fw-normal mb-1" th:text="${user.getEmail()}"></p>
+
+    <div th:if="${type == 'student'}">
+        <div th:if="${#lists.isEmpty(classes)}">Not enrolled in any subjects</div>
+        <div th:if="${!#lists.isEmpty(classes)}">
+            <h3>List of classes enrolled in</h3>
+            <ul>
+                <li th:each="class : ${classes}">
+                    <p th:text="${class.getDay()}"></p>
+                </li>
+            </ul>
+        </div>
+
+        <div th:if="${#lists.isEmpty(parents)}">No Associated Parents</div>
+        <div th:if="${!#lists.isEmpty(parents)}">
+            <h3>Parents</h3>
+            <ul>
+                <li th:each="parent : ${parents}">
+                    <span th:text="${parent.getFName()}"></span>
+                    <span th:text="${parent.getLName()}"></span>
+                    <span th:text="${parent.getPersonalEmail()}"></span>
+                    <a th:href="@{'/admin/users/' + ${parent.getId()}}" type="button" class="btn btn-link btn-sm btn-rounded">
+                        Details
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

@@ -5,7 +5,7 @@
 </head>
 <body>
 <!-- Modal -->
-<div th:fragment="modal(id, subjectCode)" class="modal fade" th:id="${id}" tabindex="-1" role="dialog" aria-labelledby="addClassModal"
+<div th:fragment="modal(id, subjectCode, periods)" class="modal fade" th:id="${id}" tabindex="-1" role="dialog" aria-labelledby="addClassModal"
      aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -33,11 +33,13 @@
                             </select>
                         </div>
 
-
-                        <!-- Time (Date and Time) -->
                         <div>
-                            <label for="time" class="form-label">Time</label>
-                            <input type="time" class="form-control" id="time" name="time" required/>
+                            <label for="period" class="form-label">Start Time (1hr duration)</label>
+                            <select class="form-select" id="period" name="period" required>
+                                <option value="" disabled selected>Select a period</option> <!-- Placeholder -->
+                                <option th:each="period : ${periods}" th:value="${period.getId()}" th:text="${period.getTime()}"></option>
+
+                            </select>
                         </div>
 
                         <!-- Room Code -->

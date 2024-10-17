@@ -7,6 +7,17 @@ import java.util.List;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED) // Use Joined strategy for inheritance
 public abstract class User {
+    public User(){};
+
+    public User(String username, String email, String password, String fName, String lName, Role role) {
+        this.email = email;
+        this.password = password;
+        this.fName = fName;
+        this.lName = lName;
+        this.username = username;
+        this.role = role;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
@@ -23,6 +34,21 @@ public abstract class User {
     protected String fName;
     protected String lName;
     protected String profileImage;
+    protected String personalEmail;
+
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
+    protected List<Notification> receivedNotifications;
+
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
+    protected List<Notification> sentNotifications;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    protected InviteLink inviteLink;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
 
     public String getfName() {
         return fName;
@@ -48,11 +74,6 @@ public abstract class User {
         this.personalEmail = personalEmail;
     }
 
-    protected String personalEmail;
-
-    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
-    protected List<Notification> receivedNotifications;
-
     public List<Notification> getSentNotifications() {
         return sentNotifications;
     }
@@ -69,33 +90,12 @@ public abstract class User {
         this.receivedNotifications = receivedNotifications;
     }
 
-    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
-    protected List<Notification> sentNotifications;
-
     public InviteLink getInviteLink() {
         return inviteLink;
     }
 
     public void setInviteLink(InviteLink inviteLink) {
         this.inviteLink = inviteLink;
-    }
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    protected InviteLink inviteLink;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Role role;
-
-    public User(){};
-
-    public User(String username, String email, String password, String fName, String lName, Role role) {
-        this.email = email;
-        this.password = password;
-        this.fName = fName;
-        this.lName = lName;
-        this.username = username;
-        this.role = role;
     }
 
     public String getFName() {
@@ -138,13 +138,6 @@ public abstract class User {
         this.password = password;
     }
 
-    public String getProfileImage() {
-        return profileImage;
-    }
-
-    public void setProfileImage(String profileImage) {
-        this.profileImage = profileImage;
-    }
     public String getUsername() {
         return username;
     }
@@ -152,7 +145,6 @@ public abstract class User {
     public void setUsername(String username) {
         this.username = username;
     }
-
 
     public Role getRole() {
         return role;

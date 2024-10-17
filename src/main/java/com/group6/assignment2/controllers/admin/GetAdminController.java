@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.io.IOException;
 import java.util.*;
@@ -40,6 +41,10 @@ public class GetAdminController {
     private PasswordEncoder passwordEncoder;
 
     static List<Link> sideNavLinks = new ArrayList<>();
+    @Autowired
+    private SessionRepository sessionRepository;
+    @Autowired
+    private SubjectClassRepository subjectClassRepository;
 
     public GetAdminController() {
         sideNavLinks = Link.addLinks("admin");
@@ -63,6 +68,103 @@ public class GetAdminController {
         model.addAttribute("message", "Welcome to the Admin Dashboard");
 
         return "/admin/users";
+
+    }
+
+    @GetMapping("/admin/users/{id}")
+    public String adminUsers(@PathVariable("id") Long id, Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+       User user = userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+       Student s;
+       Teacher t;
+       Parent p;
+       Admin a;
+       if(user instanceof Student) {
+           s = (Student) user;
+           List<SubjectClass> classes = s.getEnrollments().stream()
+                   .map(Enrollment::getSubjectClass)
+                   .toList();
+           List<Parent> parents = s.getParents();
+           model.addAttribute("user", s);
+           model.addAttribute("type", "student");
+           model.addAttribute("parents", parents);
+           model.addAttribute("classes", classes);
+       }
+       else if(user instanceof Teacher) {
+           t = (Teacher) user;
+           model.addAttribute("user", t);
+           model.addAttribute("type", "teacher");
+
+       }
+       else if (user instanceof Admin) {
+           a = (Admin) user;
+           model.addAttribute("user", a);
+           model.addAttribute("type", "admin");
+
+       }
+       else if(user instanceof Parent) {
+           p = (Parent) user;
+           model.addAttribute("user", p);
+           model.addAttribute("type", "parent");
+
+       }
+
+
+        model.addAttribute("sideNavLinks", sideNavLinks);
+
+        model.addAttribute("pageTitle", "Admin Dashboard");
+        model.addAttribute("message", "Welcome to the Admin Dashboard");
+
+        return "/admin/user-details";
+
+    }
+
+    @GetMapping("/admin/users/{id}/edit")
+    public String adminUsersEdit(@PathVariable("id") Long id, Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        User user = userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        Student s;
+        Teacher t;
+        Parent p;
+        Admin a;
+
+        List<Role> roles = new ArrayList<>(Arrays.stream(Role.values()).toList());
+        if(user instanceof Student) {
+            s = (Student) user;
+            List<SubjectClass> classes = s.getEnrollments().stream()
+                    .map(Enrollment::getSubjectClass)
+                    .toList();
+            List<Parent> parents = s.getParents();
+            model.addAttribute("user", s);
+            model.addAttribute("type", "student");
+            model.addAttribute("parents", parents);
+            model.addAttribute("classes", classes);
+        }
+        else if(user instanceof Teacher) {
+            t = (Teacher) user;
+            model.addAttribute("user", t);
+            model.addAttribute("type", "teacher");
+
+        }
+        else if (user instanceof Admin) {
+            a = (Admin) user;
+            model.addAttribute("user", a);
+            model.addAttribute("type", "admin");
+
+        }
+        else if(user instanceof Parent) {
+            p = (Parent) user;
+            model.addAttribute("user", p);
+            model.addAttribute("type", "parent");
+
+        }
+
+        model.addAttribute("sideNavLinks", sideNavLinks);
+        model.addAttribute("roles", roles);
+        model.addAttribute("pageTitle", "Admin Dashboard");
+        model.addAttribute("message", "Welcome to the Admin Dashboard");
+
+        return "/admin/edit-user-details";
 
     }
 
