@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
+<link rel="stylesheet" th:href="@{/css/home.css}"/>
 <!-- Use the base layout -->
 <head th:replace="layout-general :: head(pageTitle='Home')"></head>
 <body th:replace="layout-general :: body">
 <div th:fragment="main">
-    <h1>Welcome to the Home Page</h1>
-    <p>This is the content of the home page.</p>
+    <div class="container">
+        <h1>Welcome to the Home Page</h1>
+        <p>This is the content of the home page.</p>
+        <img th:src="@{'/images/homebg.jpg'}" alt="no image"/>
 </div>
 </body>
 </html>
