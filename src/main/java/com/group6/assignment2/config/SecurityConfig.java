@@ -13,9 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
-//test
-
+//test branch
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -38,7 +36,7 @@ public class SecurityConfig {
         http
 //                .csrf().disable()
                 .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/", "/auth/**", "/test/**", "/css/**", "/js/**", "/redirect/**").permitAll()
+                        .requestMatchers("/", "/auth/**", "/test/**", "/css/**", "/js/**", "/redirect/**", "/static/**", "/images/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/teacher/**").hasRole("TEACHER")
                         .requestMatchers("/student/**").hasRole("STUDENT")
