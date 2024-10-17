@@ -15,9 +15,24 @@
     <!-- Add more details as needed -->
     <p>Number of Enrollments: <span th:text="${subjectClass.getEnrollments().size()}"></span></p>
     <p>Room: <span th:text="${subjectClass.getRoomCode()}"></span></p>
+    <p>Session: Week <span th:text="${classSession.getWeek()}"></span></p>
+    <p>Session: Time <span th:text="${subjectClass.getPeriod().getTime()}"></span></p>
+    <p>Session: Day <span th:text="${subjectClass.getDay()}"></span></p>
+
 
     <!-- Back to subject list -->
     <a th:href="@{'/admin/subjects/' + ${subjectClass.getSubject().getCode()}}">Back to Subjects List</a>
+  </div>
+
+  <div>
+    <ul>
+      <li th:each="attendance : ${attendanceList}">
+        <span th:text="${attendance.getStudent().getUsername()}"></span>
+        <span th:text="${attendance.isPresent()}"></span>
+        <span th:text="${attendance.getExcuse()}"></span>
+        <span>Edit</span>
+      </li>
+    </ul>
   </div>
 
 </div>

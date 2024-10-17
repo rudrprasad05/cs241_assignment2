@@ -113,13 +113,15 @@ public class GetSubjectController {
     @GetMapping("/admin/subjects/{subject_code}/{classId}/attendance/{aId}")
     public String viewClassDetails(@PathVariable("classId") String classId, @PathVariable("subject_code") String subject_code, @PathVariable("aId") String aId, Model model) {
         // Fetch subject by subject_name from the database
+        SubjectClass subjectClass = subjectClassRepository.findByCode(classId);
         Session session = sessionRepository.findBySessionId(aId);
         List<Attendance> attendanceList = session.getAttendanceRecords();
 
         // Add subject to the model to pass to the view
         model.addAttribute("sideNavLinks", sideNavLinks);
         model.addAttribute("attendanceList", attendanceList);
-        model.addAttribute("session", session);
+        model.addAttribute("subjectClass", subjectClass);
+        model.addAttribute("classSession", session);
 
         return "admin/attendance-details";
     }
