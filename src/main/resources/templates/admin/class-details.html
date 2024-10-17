@@ -30,7 +30,7 @@
         <ul>
             <li th:each="classSession : ${sessions}">
                 <span th:text="${classSession.getWeek()}"></span>
-                <a th:href="@{'/admin/subjects/' + ${subjectClass.getSubject().getCode()} + '/' + ${subjectClass.getId()} + '/attendance' + ${classSession.getId()}}">view</a>
+                <a th:href="@{'/admin/subjects/' + ${subjectClass.getSubject().getCode()} + '/' + ${subjectClass.getId()} + '/attendance/' + ${classSession.getId()}}">view</a>
 
             </li>
         </ul>
