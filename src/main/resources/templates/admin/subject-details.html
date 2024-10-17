@@ -35,6 +35,7 @@
                 <span th:text="${class.getPeriod().getId()}"></span>
                 <span th:text="${class.getPeriod().getTime()}+'am'"></span>
                 <span th:text="${class.roomCode}"></span>
+                <a th:href="@{'/admin/subjects/' + ${subject.getCode()} + '/' + ${class.getId()}}">view</a>
             </li>
         </ul>
     </div>

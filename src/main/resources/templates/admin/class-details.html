@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout-dashboard :: head(name='Dashboard')"><title>Admin Dashboard</title></head>
+
+<body th:replace="layout-dashboard :: body(sideNavLinks=${sideNavLinks})">
+
+<div th:fragment="main" class="">
+
+    <div th:insert="fragments/toast :: toast(type=${toastType}, message=${toastMessage})"></div>
+
+    <div class="main">
+        <span>Day: </span>
+        <h1 th:text="${subjectClass.getDay()}"></h1>
+        <span>Period: </span>
+        <h1 th:text="${subjectClass.getPeriod().getTime()}"></h1>
+        <span>Subject Code: </span>
+        <h1 th:text="${subjectClass.getSubject().getCode()}"></h1>
+        <span>Room: </span>
+        <h1 th:text="${subjectClass.getRoomCode()}"></h1>
+
+        <!-- Add more details as needed -->
+        <p>Number of Enrollments: <span th:text="${subjectClass.getEnrollments().size()}"></span></p>
+
+        <!-- Back to subject list -->
+        <a th:href="@{'/admin/subjects/' + ${subjectClass.getSubject().getCode()}}">Back to Subjects List</a>
+    </div>
+
+    <div>
+        <ul>
+            <li th:each="classSession : ${sessions}">
+                <span th:text="${classSession.getWeek()}"></span>
+                <a th:href="@{'/admin/subjects/' + ${subjectClass.getSubject().getCode()} + '/' + ${subjectClass.getId()} + '/attendance' + ${classSession.getId()}}">view</a>
+
+            </li>
+        </ul>
+    </div>
+
+</div>
+
+</body>
+</html>

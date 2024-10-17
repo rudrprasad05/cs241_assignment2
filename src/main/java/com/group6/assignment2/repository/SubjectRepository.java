@@ -23,4 +23,6 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
     List<Subject> findByTeacher(@Param("teacherId") Long teacherId);
 
 
+
+
 }
