@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -116,11 +117,13 @@ public class GetSubjectController {
         SubjectClass subjectClass = subjectClassRepository.findByCode(classId);
         Session session = sessionRepository.findBySessionId(aId);
         List<Attendance> attendanceList = session.getAttendanceRecords();
+        List<Attendance.AttendanceType> attendanceTypeList = new ArrayList<Attendance.AttendanceType>(Arrays.stream(Attendance.AttendanceType.values()).toList());
 
         // Add subject to the model to pass to the view
         model.addAttribute("sideNavLinks", sideNavLinks);
         model.addAttribute("attendanceList", attendanceList);
         model.addAttribute("subjectClass", subjectClass);
+        model.addAttribute("attendanceTypeList", attendanceTypeList);
         model.addAttribute("classSession", session);
 
         return "admin/attendance-details";

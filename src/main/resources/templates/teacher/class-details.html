@@ -9,7 +9,23 @@
 
     <div th:insert="fragments/toast :: toast(type=${toastType}, message=${toastMessage})"></div>
 
-    <a th:href="@{'/teacher/subjects/' + ${subject.getCode()} + '/' + ${subjectClass.getId()} + '/attendance'}">View Attendance</a>
+    <div class="main">
+        <span>Day: </span>
+        <h1 th:text="${subjectClass.getDay()}"></h1>
+        <span>Period: </span>
+        <h1 th:text="${subjectClass.getPeriod().getTime()}"></h1>
+        <span>Subject Code: </span>
+        <h1 th:text="${subjectClass.getSubject().getCode()}"></h1>
+        <span>Room: </span>
+        <h1 th:text="${subjectClass.getRoomCode()}"></h1>
+
+        <!-- Add more details as needed -->
+        <p>Number of Enrollments: <span th:text="${subjectClass.getEnrollments().size()}"></span></p>
+
+        <!-- Back to subject list -->
+        <a th:href="@{'/admin/subjects/' + ${subjectClass.getSubject().getCode()}}">Back to Subjects List</a>
+    </div>
+
 
     <h2>Students</h2>
     <div class="no-data-box d-flex" th:if="${#lists.isEmpty(enrolledStudents)}"><p class="mx-auto my-auto">No students enrolled</p></div>
@@ -18,6 +34,18 @@
             <span th:text="${student.getUsername()}"></span>
         </li>
     </ul>
+
+    <div>
+        <h2>Attendance Details</h2>
+        <ul>
+            <li th:each="classSession : ${sessionClass}">
+                <span th:text="${classSession.getWeek()}"></span>
+                <a th:href="@{'/teacher/subjects/' + ${subjectClass.getSubject().getCode()} + '/' + ${subjectClass.getId()} + '/attendance/' + ${classSession.getId()}}">view</a>
+
+            </li>
+        </ul>
+    </div>
+
 </div>
 
 </body>

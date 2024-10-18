@@ -9,20 +9,33 @@
 
   <div th:insert="fragments/toast :: toast(type=${toastType}, message=${toastMessage})"></div>
 
-  <div class="main">
-    <h1 th:text="${subjectClass.getPeriod().getId()}">Subject Name</h1>
+  <main class="main">
+    <section class="d-flex fs-3 gap-2">
+      <span>
+        Edit Attendance
+      </span>
+      <span class="text-uppercase" th:text="${subjectClass.getSubject().getCode()}"></span>
+      <div class="badge bg-primary d-flex justify-content-between rounded-pill fs-6 fw-light my-auto">
+        <span>Week</span>
+        <span th:text="${classSession.getWeek()}"></span>
+      </div>
+    </section>
+
+
+    <section class="d-flex gap-2">
+      <span th:text="${subjectClass.getDay()}"></span>
+      <span th:text="${subjectClass.getPeriod().getTime()}"></span>
+    </section>
 
     <!-- Add more details as needed -->
     <p>Number of Enrollments: <span th:text="${subjectClass.getEnrollments().size()}"></span></p>
     <p>Room: <span th:text="${subjectClass.getRoomCode()}"></span></p>
-    <p>Session: Week <span th:text="${classSession.getWeek()}"></span></p>
     <p>Session: Time <span th:text="${subjectClass.getPeriod().getTime()}"></span></p>
     <p>Session: Day <span th:text="${subjectClass.getDay()}"></span></p>
 
-
     <!-- Back to subject list -->
-    <a th:href="@{'/admin/subjects/' + ${subjectClass.getSubject().getCode()}}">Back to Subjects List</a>
-  </div>
+    <a th:href="@{'/teacher/subjects/' + ${subjectClass.getSubject().getCode()}}">Back to Subjects List</a>
+  </main>
 
   <div>
     <ul>
@@ -30,7 +43,7 @@
         <span th:text="${attendance.getStudent().getUsername()}"></span>
         <span th:text="${attendance.isPresent()}"></span>
         <span th:text="${attendance.getExcuse()}"></span>
-        <form method="post" action="/admin/attendance/update">
+        <form method="post" action="/teacher/attendance/update">
           <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
           <input type="hidden" name="attendanceId" th:value="${attendance.getId()}"/>
 

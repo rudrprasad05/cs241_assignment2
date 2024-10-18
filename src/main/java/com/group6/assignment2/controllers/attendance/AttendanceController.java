@@ -80,6 +80,33 @@ public class AttendanceController {
         return "redirect:" + referer;
     }
 
+    @PostMapping("/admin/attendance/update")
+    public String updateAttendance(
+            RedirectAttributes redirectAttributes,
+            @RequestParam("attendanceId") String attendanceId,
+            @RequestParam("attendanceStatus") Attendance.AttendanceType attendanceStatus,
+            @AuthenticationPrincipal UserDetails userDetails,
+            HttpServletRequest request
+    ) {
+        // Find attendance record by ID
+        Attendance attendance = attendanceRepository.findByAttendanceId(attendanceId);
+
+        // Update the attendance status with the selected value
+        attendance.setPresent(attendanceStatus);
+
+        // Save the updated attendance record
+        attendanceRepository.save(attendance);
+
+        redirectAttributes.addFlashAttribute("toastMessage", "Attendance Updated Successfully");
+        redirectAttributes.addFlashAttribute("toastType", "success");  // You can send 'success', 'error', etc.
+
+
+        // Redirect back to the referring page
+        String referer = request.getHeader("Referer");
+        return "redirect:/";
+//        return "redirect:" + referer;
+    }
+
 
 
 

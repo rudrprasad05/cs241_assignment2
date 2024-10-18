@@ -156,27 +156,22 @@ public class TeacherController {
         return "teacher/class-details";  // Refers to src/main/resources/templates/user/dashboard.html
     }
 
-    @GetMapping("/teacher/subjects/{code}/{classId}/attendance")
-    public String teacherClassSubjectAttendance(
-            Model model,
-            @PathVariable("code") String code,
-            @PathVariable("classId") String classId,
-            @AuthenticationPrincipal UserDetails userDetails
-    ) {
-
-        Subject subject = subjectRepository.findByCode(code);
+    @GetMapping("/teacher/subjects/{subject_code}/{classId}/attendance/{aId}")
+    public String viewClassDetails(@PathVariable("classId") String classId, @PathVariable("subject_code") String subject_code, @PathVariable("aId") String aId, Model model) {
+        // Fetch subject by subject_name from the database
         SubjectClass subjectClass = subjectClassRepository.findByCode(classId);
+        Session session = sessionRepository.findBySessionId(aId);
+        List<Attendance> attendanceList = session.getAttendanceRecords();
+        List<Attendance.AttendanceType> attendanceTypeList = new ArrayList<Attendance.AttendanceType>(Arrays.stream(Attendance.AttendanceType.values()).toList());
 
-        List<Session> sessions = subjectClass.getSessions();
-
-        model.addAttribute("subject", subject);
-        model.addAttribute("subjectClass", subjectClass);
-        model.addAttribute("sessions", sessions);
+        // Add subject to the model to pass to the view
         model.addAttribute("sideNavLinks", sideNavLinks);
+        model.addAttribute("attendanceList", attendanceList);
+        model.addAttribute("subjectClass", subjectClass);
+        model.addAttribute("attendanceTypeList", attendanceTypeList);
+        model.addAttribute("classSession", session);
 
-
-
-        return "teacher/view-attendance";  // Refers to src/main/resources/templates/user/dashboard.html
+        return "teacher/attendance-details";
     }
 
     public Map<Session, List<Attendance>> getSessionsWithAcceptedAttendances(SubjectClass subjectClass) {
