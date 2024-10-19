@@ -1,3 +1,40 @@
-body {
-    background: url('static/images/homebg.jpg') no-repeat center center fixed;
+
+/* Background image styling */
+body{
+
+}
+.homebg {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+}
+
+/* Container for text content */
+.container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Uses the full viewport height */
+    width: 100vw; /* Uses the full viewport width */
+    text-align: center;
+    z-index: 1;
+}
+
+/* Text box styling */
+.text-box {
+    color: #000000; /* Adjusts the text color to white for better visibility */
+    background-color: rgba(255, 255, 255, 0.84); /* Darker background for readability */
+    padding: 20px;
+    border-radius: 10px;
+    width: fit-content; /* Ensures the background only spans the text width */
+    margin: auto; /* Centers the text block horizodntally */
+    width: 50%;
+    padding: 25px;
+}
+p{
+    font-family: "arial";
+    font-size: 17px;
 }

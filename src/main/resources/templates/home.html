@@ -1,14 +1,23 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <link rel="stylesheet" th:href="@{/css/home.css}"/>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <!-- Use the base layout -->
 <head th:replace="layout-general :: head(pageTitle='Home')"></head>
 <body th:replace="layout-general :: body">
 <div th:fragment="main">
-    <div class="container">
-        <h1>Welcome to the Home Page</h1>
-        <p>This is the content of the home page.</p>
-        <img th:src="@{'/images/homebg.jpg'}" alt="no image"/>
+    <div class="container d-flex justify-content-center align-items-center vh-100 position-relative">
+        <div class="text-box">
+            <h1>Welcome to Your Learning Hub!</h1>
+            <p>Dive into a sea of resources tailored just for you. Whether you're here to explore new subjects or master familiar ones, this is your space to learn, grow, and connect. Let's make every learning moment exciting and impactful!</p>
+        </div>
+    </div>
+
+    <!-- Background image included directly in the HTML -->
+    <div class="homebg">
+        <img th:src="@{'/images/homebg.jpg'}" alt="Background image"  >
+    </div>
 </div>
 </body>
 </html>
+
