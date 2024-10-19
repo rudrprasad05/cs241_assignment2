@@ -16,6 +16,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 import java.io.IOException;
 import java.util.*;
@@ -58,12 +62,20 @@ public class GetAdminController {
     }
 
     @GetMapping("/admin/users")
-    public String adminApplications(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public String adminApplications(
+            Model model,
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @RequestParam(defaultValue = "0") int page
+    ) throws IOException {
+
         List<User> allUsers = userRepository.findAll();
+        Page<User> allUsersPage = userRepository.findAll(PageRequest.of(page, 1));
+
         allUsers.sort(Comparator.comparing(User::getId));
 
         model.addAttribute("sideNavLinks", sideNavLinks);
-        model.addAttribute("allUsers", allUsers);
+        model.addAttribute("allUsers", allUsersPage);
         model.addAttribute("pageTitle", "Admin Dashboard");
         model.addAttribute("message", "Welcome to the Admin Dashboard");
 
