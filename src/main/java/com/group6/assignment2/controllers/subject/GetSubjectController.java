@@ -19,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Controller
@@ -44,6 +45,8 @@ public class GetSubjectController {
     private SessionRepository sessionRepository;
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
 
     public GetSubjectController() {
         sideNavLinks = Link.addLinks("admin");
@@ -105,7 +108,6 @@ public class GetSubjectController {
         List<Period> periodsList = periodRepository.findAll();
         List<Teacher> teachers = teacherRepository.findAll();
         List<Student> students = studentRepository.findStudentsNotEnrolledInSubject(subject.getId());
-
         // Check if subject exists
 
 
@@ -131,11 +133,13 @@ public class GetSubjectController {
         }
 
         List<Session> sessions = subjectClass.getSessions();
-
+        List<Enrollment> enrollments = subjectClass.getEnrollments();
+        List<Enrollment> accepted = enrollmentRepository.findEnrollmentsByStatusAcceptedAndSubjectClass(subjectClass.getId());
 
         // Add subject to the model to pass to the view
         model.addAttribute("sideNavLinks", sideNavLinks);
         model.addAttribute("sessions", sessions);
+        model.addAttribute("accepted", accepted);
         model.addAttribute("subjectClass", subjectClass);
 
         return "admin/class-details";

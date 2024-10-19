@@ -19,6 +19,9 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     @Query("SELECT e FROM Enrollment e WHERE e.subjectClass.subject.code = :code AND e.isAccepted = 'ACCEPTED'")
     List<Enrollment> findEnrollmentsByStatusAccepted(@Param("code") String code);
 
+    @Query("SELECT e FROM Enrollment e WHERE e.subjectClass.id = :id AND e.isAccepted = 'ACCEPTED'")
+    List<Enrollment> findEnrollmentsByStatusAcceptedAndSubjectClass(@Param("id") Long id);
+
     Enrollment findByStudentAndSubjectClass(Student student, SubjectClass subjectClass);
 }
 
