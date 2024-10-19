@@ -4,6 +4,8 @@ import com.group6.assignment2.config.Link;
 import com.group6.assignment2.entity.*;
 import com.group6.assignment2.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -48,13 +50,35 @@ public class GetSubjectController {
     }
 
     @GetMapping("/admin/subjects")
-    public String showSubjectsPage(Model model) {
+    public String showSubjectsPage(
+            Model model,
+            @RequestParam(defaultValue = "1") int page
+    ) {
+        if(page <= 0 ){
+            return "redirect:/admin/subjects";
+        }
         // Fetch all subjects from the database
         List<Teacher> allTeachers = teacherRepository.findAll();
-        List<Subject> allSubjects = subjectRepository.findAll();
+        List<Integer> pageNumbers = new ArrayList<>();
+
+        double subjectCount = subjectRepository.count();
+        double pageSize = 10L;
+        int pages = (int) Math.ceil(subjectCount / pageSize);
+
+        for(int i = 1; i <= pages; i++) {
+            pageNumbers.add(i);
+        }
+        boolean prevDisabled = page == 1;
+        boolean nextDisabled = page >= pages;
+
+        Page<Subject> allSubjectsPage = subjectRepository.findAll(PageRequest.of(page -1, (int) pageSize));
 
         model.addAttribute("sideNavLinks", sideNavLinks);
-        model.addAttribute("subjects", allSubjects);
+        model.addAttribute("subjects", allSubjectsPage);
+        model.addAttribute("pageNumbers", pageNumbers);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("prevDisabled", prevDisabled);
+        model.addAttribute("nextDisabled", nextDisabled);
         model.addAttribute("teachers", allTeachers);
 
         return "admin/subjects";

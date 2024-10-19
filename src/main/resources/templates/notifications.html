@@ -8,6 +8,7 @@
 <div th:fragment="main" class="">
 
     <div class="container-fluid w-100 m-2">
+        <h3 class="mb-2">Notifications</h3>
         <div class="no-data-box d-flex" th:if="${#lists.isEmpty(receivedNotifications)}"><p class="mx-auto my-auto">No data available</p></div>
 
         <div class="d-flex flex-column gap-3">

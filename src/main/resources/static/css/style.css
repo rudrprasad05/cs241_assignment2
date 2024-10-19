@@ -21,6 +21,20 @@ body {
     grid-template-columns: repeat(2, 1fr);
 }
 
+.grid-4-cols{
+    width: 100%;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.grid-3-cols{
+    width: 100%;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(3, 1fr);
+}
+
 .flex-grid-one-col{
     display: flex;
     flex-direction: column;

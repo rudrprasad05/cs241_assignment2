@@ -1,12 +1,9 @@
 package com.group6.assignment2.controllers.admin;
 
 import com.group6.assignment2.config.Link;
-import com.group6.assignment2.config.RedirectionConfig;
 import com.group6.assignment2.controllers.EmailController;
 import com.group6.assignment2.entity.*;
 import com.group6.assignment2.repository.*;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,12 +11,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -58,27 +53,32 @@ public class PostAdminController {
         String id;
         User user;
         String emailString;
+        String type;
         String passwordString = passwordEncoder.encode(password);
 
         switch (role){
             case TEACHER:
                 id = generateId("T");
+                type = "teacher";
                 emailString = id + "@teacher.com";
                 user = new Teacher(id, emailString, personalEmail, passwordString, fName, lName);
                 break;
             case STUDENT:
                 id = generateId("S");
+                type = "student";
                 emailString = id + "@student.com";
                 user = new Student(id, fName, lName, emailString, personalEmail, passwordString);
                 break;
             case ADMIN:
                 id = generateId("A");
+                type = "admin";
                 emailString = id + "@admin.com";
                 user = new Admin(id, fName, lName, emailString, personalEmail, passwordString);
                 break;
 
             default:
                 id = generateId("U");
+                type = "user";
                 emailString = id + "@user.com";
                 user = new Student(id, fName, lName, emailString, personalEmail, passwordString);
                 break;
@@ -87,6 +87,7 @@ public class PostAdminController {
 
         String inviteLinkCode = createInviteLink(user);
         sendNotification(userDetails, user);
+        sendNotificationToAdmin(type);
         sendEmail(id, password, personalEmail, inviteLinkCode);
 
         redirectAttributes.addFlashAttribute("toastMessage", "User successfully invited");
@@ -104,18 +105,29 @@ public class PostAdminController {
         String emailString = id + "@parent.com";
         String passwordString = passwordEncoder.encode(password);
 
-        Parent user = new Parent(id, fName, lName, emailString, personalEmail, passwordString);
+        Parent parent = new Parent(id, fName, lName, emailString, personalEmail, passwordString);
         Student student = studentRepository.findByStudentId(studentId);
-        user.setStudent(student);
-        userRepository.save(user);
+        parent.setStudent(student);
+        userRepository.save(parent);
 
-        String inviteLinkCode = createInviteLink(user);
-        sendNotification(userDetails, user);
+        String inviteLinkCode = createInviteLink(parent);
+        sendNotification(userDetails, parent);
         sendEmail(id, password, personalEmail, inviteLinkCode);
+
+        sendNotificationToAdmin("parent");
 
         model.addAttribute("inviteLink", "/invite/" + inviteLinkCode);
 
         return "redirect:/admin/invite-parent";
+    }
+
+    private void sendNotificationToAdmin(String type) {
+        String message = "A new " + type + " was successfully invited to join the attendance management system";
+        String title = "A new " + type + "!";
+        Notification.NotificationType notificationType = Notification.NotificationType.INFO;
+        User admin =  userRepository.findOneByRole(Role.ADMIN);
+        Notification notification = new Notification(message, title, notificationType, admin, admin);
+        notificationRepository.save(notification);
     }
 
     private void sendEmail(String username, String unhashedPassword, String personalEmail, String inviteLinkCode) {
