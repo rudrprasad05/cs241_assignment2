@@ -39,7 +39,11 @@ public class EnrollmentController {
     private NotificationRepository notificationRepository;
 
     @PostMapping("/student/enrollment/new")
-    public String addClass(RedirectAttributes redirectAttributes, @RequestParam("subjectClassId") String subjectClassId, @AuthenticationPrincipal UserDetails userDetails) {
+    public String addClass(
+            RedirectAttributes redirectAttributes,
+            @RequestParam("subjectClassId") String subjectClassId,
+            @AuthenticationPrincipal UserDetails userDetails)
+    {
 
         Student student = studentRepository.findByUsername(userDetails.getUsername());
         Admin admin = adminRepository.findByUsername("admin");

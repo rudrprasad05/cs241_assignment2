@@ -10,20 +10,32 @@
     <div th:insert="fragments/toast :: toast(type=${toastType}, message=${toastMessage})"></div>
 
     <div class="main">
-        <h1 th:text="${subject.name}">Subject Name</h1>
+        <section class="d-flex fs-3 gap-2">
+            <span class="text-capitalize" th:text="${subject.getDescription()}"></span>
+            <span class="text-uppercase" th:text="${subject.getCode()}"></span>
+        </section>
 
-        <!-- Add more details as needed -->
-        <p>Number of Classes: <span th:text="${subject.getSubjectClasses().size()}"></span></p>
-        <p>Teacher: <span th:text="${subject.teacher.getFName()} + ' ' + ${subject.teacher.getLName()}"></span></p>
+        <section class="my-4">
+            <div class="d-flex justify-content-between mb-3">
+                <h3 class="mb-2">Teacher</h3>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addClassModal">Change</button>
+            </div>
+            <div class="card my-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="fs-4 m-0" th:text="${subject.teacher.getFName()}" ></h5>
+                        <h6 class="badge bg-success d-flex justify-content-between rounded-pill fw-light my-auto">Teacher</h6>
+                    </div>
+                    <a class="btn-sm btn btn-outline-secondary" th:href="@{/admin/users/{code}(code=${subject.teacher.getId()})}">View</a>
 
-        <!-- Back to subject list -->
-        <a href="/admin/subjects">Back to Subjects List</a>
+                </div>
+            </div>
+        </section>
+
+
     </div>
 
     <div>
-        <div class="d-flex justify-content-between">
-            <p>Classes</p>
-        </div>
         <th:block th:replace="modals/addClassModal :: modal(id=${'addClassModal'}, subjectCode=${subject.getCode()}, periods=${periods})">modal</th:block>
         <p th:if="${subjectClass.isEmpty()}">No data available.</p>
 
@@ -51,36 +63,38 @@
     </div>
 
     <div>
-        <div class="d-flex justify-content-between">
-            <p>Students</p>
+        <div class="d-flex justify-content-between mb-3">
+            <h3 class="mb-2">Students</h3>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addClassModal">Add Student</button>
         </div>
         <p th:if="${enrollments.isEmpty()}">No data available.</p>
 
-        <ul th:if="${!enrollments.isEmpty()}">
-            <li th:each="enrollment : ${enrollments}">
-                <span th:text="${enrollment.getStudent().getStudentId()}"></span>
-                <span th:text="${enrollment.isAccepted().toString() == 'ACCEPTED' ? 'ACCEPTED' : (enrollment.isAccepted().toString() == 'PENDING' ? 'PENDING' : 'REJECTED')}"></span>
+        <div th:if="${!enrollments.isEmpty()}">
+            <div class="card" th:each="enrollment : ${enrollments}">
+                <div class="card-body">
+                    <span th:text="${enrollment.getStudent().getStudentId()}"></span>
+                    <span th:text="${enrollment.isAccepted().toString() == 'ACCEPTED' ? 'ACCEPTED' : (enrollment.isAccepted().toString() == 'PENDING' ? 'PENDING' : 'REJECTED')}"></span>
 
-                <!--show reject button if status is accepted or pending-->
-                <form action="/admin/enrollment/change-status/rejected" method="post" th:if="${enrollment.isAccepted().toString() == 'ACCEPTED' || enrollment.isAccepted().toString() == 'PENDING'}">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                    <input type="hidden" th:value="${enrollment.id}" name="enrollmentId" />
-                    <button type="submit" class="btn btn-danger">Reject</button>
-                </form>
+                    <!--show reject button if status is accepted or pending-->
+                    <form action="/admin/enrollment/change-status/rejected" method="post" th:if="${enrollment.isAccepted().toString() == 'ACCEPTED' || enrollment.isAccepted().toString() == 'PENDING'}">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <input type="hidden" th:value="${enrollment.id}" name="enrollmentId" />
+                        <button type="submit" class="btn btn-danger">Reject</button>
+                    </form>
 
-                <!--show Accept button if status is rejected or pending-->
-                <form action="/admin/enrollment/change-status/accepted" method="post" th:if="${enrollment.isAccepted().toString() == 'PENDING'}">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                    <input type="hidden" th:value="${enrollment.id}" name="enrollmentId" />
-                    <button type="submit" class="btn btn-success">Accept</button>
-                </form>
+                    <!--show Accept button if status is rejected or pending-->
+                    <form action="/admin/enrollment/change-status/accepted" method="post" th:if="${enrollment.isAccepted().toString() == 'PENDING'}">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <input type="hidden" th:value="${enrollment.id}" name="enrollmentId" />
+                        <button type="submit" class="btn btn-success">Accept</button>
+                    </form>
 
-                <div th:if="${enrollment.isAccepted().toString() == 'REJECTED'}">
-                    <div class="btn btn-secondary">Rejected</div>
+                    <div th:if="${enrollment.isAccepted().toString() == 'REJECTED'}">
+                        <div class="btn btn-secondary">Rejected</div>
+                    </div>
                 </div>
-
-            </li>
-        </ul>
+            </div>
+        </div>
     </div>
 
 </div>
