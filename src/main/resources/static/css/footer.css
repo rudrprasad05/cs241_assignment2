@@ -1,0 +1,23 @@
+background-color: #808080; /* Gray background */
+}
+.container-fluid {
+    display: flex;
+    justify-content: space-between; /* Distributes space between children */
+    align-items: center;
+}
+.social-links {
+    text-align: right; /* Align social links to the right */
+    list-style-type: none; /* Removes bullet points from list */
+    padding: 0; /* Removes padding */
+}
+.social-links li {
+    display: inline; /* Display list items inline */
+    margin-right: 10px; /* Spacing between links */
+}
+.social-links a {
+    color: white; /* Text color for links */
+    text-decoration: none; /* No underline */
+}
+.social-links a:hover {
+    text-decoration: underline; /* Underline on hover */
+}
