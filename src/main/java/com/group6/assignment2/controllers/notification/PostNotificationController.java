@@ -6,6 +6,7 @@ import com.group6.assignment2.repository.NotificationRepository;
 import com.group6.assignment2.repository.StudentRepository;
 import com.group6.assignment2.repository.SubjectRepository;
 import com.group6.assignment2.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,6 +38,39 @@ public class PostNotificationController {
 
     static List<Link> sideNavLinks = new ArrayList<>();
 
+    @PostMapping("/notification/seen")
+    public String seenNotification(
+            @RequestParam("id") Long id,
+            HttpServletRequest request
+
+    ) {
+        // Get sender (teacher) and receiver
+       Notification notification = notificationRepository.findById(id).orElseThrow(() -> new RuntimeException("Receiver not found"));
+       notification.setSeen(true);
+
+        // Save the notification
+        notificationRepository.save(notification);
+
+        String referer = request.getHeader("Referer");
+        System.out.println(referer);
+        return "redirect:" + referer;
+    }
+
+    @PostMapping("/notification/delete")
+    public String deleteNotification(
+            @RequestParam("id") Long id,
+            HttpServletRequest request
+
+    ) {
+        // Get sender (teacher) and receiver
+        Notification notification = notificationRepository.findById(id).orElseThrow(() -> new RuntimeException("Receiver not found"));
+
+        notificationRepository.delete(notification);
+
+        String referer = request.getHeader("Referer");
+        System.out.println(referer);
+        return "redirect:" + referer;
+    }
 
     @PostMapping("/teacher/send-notification")
     public String sendNotification(

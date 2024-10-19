@@ -23,7 +23,7 @@
                         <h6 class="badge bg-primary d-flex justify-content-between rounded-pill fw-light my-auto"  th:text="${subjectClass.getPeriod().getTime()}+${subjectClass.getPeriod().getTime().getHour() > 11 ? ' pm' : ' am'}"></h6>
                     </div>
 
-                    <h6 class="card-subtitle mb-2 text-muted"  th:text="${subjectClass.getRoomCode()}"></h6>
+                    <h6 class="card-subtitle mb-2 text-muted"  th:text="'Room: ' + ${subjectClass.getRoomCode()}"></h6>
 
                     <a class="btn-sm btn btn-outline-secondary" th:href="@{/teacher/subjects/{code}/{session}(code=${subject.getCode()}, session=${subjectClass.getId()})}">View</a>
                 </div>
@@ -32,29 +32,8 @@
 
     </section>
 
-
-    <div th:each="subjectClass : ${subject.getSubjectClasses()}">
-        <div class="card-block">
-            <!-- Access SubjectClass via entry.key -->
-            <h4 class="card-title mt-3" th:text="${subjectClass.getDay()}"></h4>
-            <div class="meta" th:text="${subjectClass.getRoomCode()}"></div>
-
-            <a th:href="@{/teacher/subjects/{code}/{classId}(code=${subject.getCode()}, classId=${subjectClass.getId()})}">View</a>
-        </div>
-    </div>
-
 </div>
 
-</div>
-
-</div>
-
-
-
-
-
-
-</div>
 
 </body>
 </html>
