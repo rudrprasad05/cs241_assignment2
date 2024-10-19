@@ -71,28 +71,44 @@
         <p th:if="${enrollments.isEmpty()}">No data available.</p>
 
         <div th:if="${!enrollments.isEmpty()}" class="flex-grid-one-col">
+            <div class="card ">
+                <div class="card-body grid-4-cols">
+                    <span>ID</span>
+                    <span>Name</span>
+                    <span>Status</span>
+                    <span class="ms-auto text-right">Actions</span>
+                </div>
+            </div>
             <div class="card" th:each="enrollment : ${enrollments}">
-                <div class="card-body">
+                <div class="card-body grid-4-cols">
                     <span th:text="${enrollment.getStudent().getStudentId()}"></span>
-                    <span th:text="${enrollment.isAccepted().toString() == 'ACCEPTED' ? 'ACCEPTED' : (enrollment.isAccepted().toString() == 'PENDING' ? 'PENDING' : 'REJECTED')}"></span>
+                    <span th:text="${enrollment.getStudent().getFName()}"></span>
+                    <span class="text-success" th:if="${enrollment.isAccepted().toString() == 'ACCEPTED'}">Accepted</span>
+                    <span class="text-warning" th:if="${enrollment.isAccepted().toString() == 'PENDING'}">Pending</span>
+                    <span class="text-danger" th:if="${enrollment.isAccepted().toString() == 'REJECTED'}">Rejected</span>
 
-                    <!--show reject button if status is accepted or pending-->
-                    <form action="/admin/enrollment/change-status/rejected" method="post" th:if="${enrollment.isAccepted().toString() == 'ACCEPTED' || enrollment.isAccepted().toString() == 'PENDING'}">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                        <input type="hidden" th:value="${enrollment.id}" name="enrollmentId" />
-                        <button type="submit" class="btn btn-danger">Reject</button>
-                    </form>
 
-                    <!--show Accept button if status is rejected or pending-->
-                    <form action="/admin/enrollment/change-status/accepted" method="post" th:if="${enrollment.isAccepted().toString() == 'PENDING'}">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                        <input type="hidden" th:value="${enrollment.id}" name="enrollmentId" />
-                        <button type="submit" class="btn btn-success">Accept</button>
-                    </form>
+                    <div class="d-flex gap-3 ms-auto">
+                        <!--show reject button if status is accepted or pending-->
+                        <form action="/admin/enrollment/change-status/rejected" method="post" th:if="${enrollment.isAccepted().toString() == 'ACCEPTED' || enrollment.isAccepted().toString() == 'PENDING'}">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <input type="hidden" th:value="${enrollment.id}" name="enrollmentId" />
+                            <button type="submit" class="btn btn-danger">Reject</button>
+                        </form>
 
-                    <div th:if="${enrollment.isAccepted().toString() == 'REJECTED'}">
-                        <div class="btn btn-secondary">Rejected</div>
+                        <!--show Accept button if status is rejected or pending-->
+                        <form action="/admin/enrollment/change-status/accepted" method="post" th:if="${enrollment.isAccepted().toString() == 'PENDING'}">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <input type="hidden" th:value="${enrollment.id}" name="enrollmentId" />
+                            <button type="submit" class="btn btn-success">Accept</button>
+                        </form>
+
+                        <div th:if="${enrollment.isAccepted().toString() == 'REJECTED'}">
+                            <div class="btn btn-secondary">Rejected</div>
+                        </div>
+
                     </div>
+
                 </div>
             </div>
         </div>

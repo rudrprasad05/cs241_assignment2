@@ -50,6 +50,8 @@ public class Link {
             links.add(new Link("/parent/dashboard", "Dashboard"));
             links.add(new Link("/parent/notifications", "Notifications"));
             links.add(new Link("/parent/child", "My Child"));
+            links.add(new Link("/parent/profile", "Profile"));
+
         }
 
         return links;

@@ -5,7 +5,6 @@ import com.group6.assignment2.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,7 +44,7 @@ public class EnrollmentController {
             @AuthenticationPrincipal UserDetails userDetails)
     {
 
-        Student student = studentRepository.findByUsername(userDetails.getUsername());
+        Student student = studentRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new IllegalArgumentException("User not found"));
         Admin admin = adminRepository.findByUsername("admin");
         SubjectClass subjectClass = subjectClassRepository.findByCode(subjectClassId);
         Subject subject = subjectClass.getSubject();
@@ -71,7 +70,7 @@ public class EnrollmentController {
     public String accepted(RedirectAttributes redirectAttributes, @RequestParam("enrollmentId") String enrollmentId) {
         System.out.println("hit");
         Long id = Long.parseLong(enrollmentId);
-        Enrollment enrollment = enrollmentRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("Enrollment not found"));
+        Enrollment enrollment = enrollmentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Enrollment not found"));
         enrollment.setAccepted(Enrollment.EnrollmentStatus.ACCEPTED);
 
         enrollmentRepository.save(enrollment);
@@ -95,7 +94,7 @@ public class EnrollmentController {
     public String rejected(RedirectAttributes redirectAttributes, @RequestParam("enrollmentId") String enrollmentId) {
 
         Long id = Long.parseLong(enrollmentId);
-        Enrollment enrollment = enrollmentRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("Enrollment not found"));
+        Enrollment enrollment = enrollmentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Enrollment not found"));
         enrollment.setAccepted(Enrollment.EnrollmentStatus.REJECTED);
 
         enrollmentRepository.save(enrollment);

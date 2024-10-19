@@ -3,17 +3,19 @@ package com.group6.assignment2.controllers.student;
 import com.group6.assignment2.config.Link;
 import com.group6.assignment2.entity.*;
 import com.group6.assignment2.repository.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -68,7 +70,7 @@ public class StudentDashboardController {
 
     @GetMapping("/student/notifications")
     public String studentNotification(Model model, @AuthenticationPrincipal UserDetails userDetails){
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new IllegalArgumentException("User not found"));
         List<Notification> receivedNotifications = user.getReceivedNotifications();
 
         model.addAttribute("receivedNotifications", receivedNotifications);
@@ -81,7 +83,7 @@ public class StudentDashboardController {
 
     @GetMapping("/student/subjects")
     public String studentSubjects(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        Student student = studentRepository.findByUsername(userDetails.getUsername());
+        Student student = studentRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         List<Subject> subjects = subjectRepository.findAll();
         List<Subject> enrolledSubjects = student.getEnrollments().stream()
@@ -101,7 +103,7 @@ public class StudentDashboardController {
     @GetMapping("/student/subjects/{subject_code}")
     public String studentSubjectDetails(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("subject_code") String subject_code, Model model) {
 
-        Student student = studentRepository.findByUsername(userDetails.getUsername());
+        Student student = studentRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new IllegalArgumentException("User not found"));
         Subject subject = subjectRepository.findByCode(subject_code);
         List<SubjectClass> subjectClasses = subject.getSubjectClasses();
         List<Enrollment> enrollments = new ArrayList<>();
@@ -124,12 +126,41 @@ public class StudentDashboardController {
         return "student/subject-details";
     }
 
+    @GetMapping("/student/profile")
+    public String studentProfile(
+            @AuthenticationPrincipal UserDetails userDetails,
+            Model model,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws IOException {
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElse(null);
+        model.addAttribute("user", user);
+        model.addAttribute("sideNavLinks", sideNavLinks);
+
+        return "/profile";
+    }
+
+
+    @GetMapping("/student/profile/edit")
+    public String studentProfileEdit(
+            @AuthenticationPrincipal UserDetails userDetails,
+            Model model,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws IOException {
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElse(null);
+        model.addAttribute("user", user);
+        model.addAttribute("sideNavLinks", sideNavLinks);
+
+        return "/edit-profile";
+    }
+
     @GetMapping("/student/subjects/{subject_code}/{class_code}")
     public String studentClassDetails(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("subject_code") String subject_code, @PathVariable("class_code") String class_code, Model model) {
         Long id = Long.parseLong(class_code);
-        Student student = studentRepository.findByUsername(userDetails.getUsername());
+        Student student = studentRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new IllegalArgumentException("User not found"));
         Subject subject = subjectRepository.findByCode(subject_code);
-        SubjectClass subjectClass = subjectClassRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("Class not found"));
+        SubjectClass subjectClass = subjectClassRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Class not found"));
         List<Session> classSessions = subjectClass.getSessions();
 
         classSessions.sort(Comparator.comparing(Session::getWeek));

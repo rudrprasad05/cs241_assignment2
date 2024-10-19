@@ -75,8 +75,7 @@ public class AuthController {
 
         String studentId = generateStudentId();
         String studentEmail = studentId + "@student.com";
-        Student student = new Student(studentId, fName, lName, studentEmail, passwordEncoder.encode(password), studentId);
-        student.setPersonalEmail(personalEmail);
+        Student student = new Student(studentId, fName, lName, studentEmail, personalEmail, passwordEncoder.encode(password));
         studentRepository.save(student);
 
         String inviteLinkCode = UUID.randomUUID().toString().replace("-", "").substring(0, 32);  // Generate a 32-character random string

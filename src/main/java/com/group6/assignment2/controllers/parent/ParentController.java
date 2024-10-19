@@ -2,23 +2,22 @@ package com.group6.assignment2.controllers.parent;
 
 import com.group6.assignment2.config.Link;
 import com.group6.assignment2.entity.*;
-import com.group6.assignment2.repository.EnrollmentRepository;
-import com.group6.assignment2.repository.StudentRepository;
-import com.group6.assignment2.repository.SubjectRepository;
-import com.group6.assignment2.repository.UserRepository;
+import com.group6.assignment2.repository.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.io.IOException;
+import java.lang.IllegalArgumentException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @Controller
@@ -37,6 +36,16 @@ public class ParentController {
     private SubjectRepository subjectRepository;
 
     List<Link> sideNavLinks = new ArrayList<>();
+    @Autowired
+    private SubjectClassRepository subjectClassRepository;
+    @Autowired
+    private AttendanceRepository attendanceRepository;
+    @Autowired
+    private ParentRepository parentRepository;
+
+    public ParentController() {
+        sideNavLinks = Link.addLinks("parent");
+    }
 
     @GetMapping("/parent")
     public String redirectToDashboard(Model model) {
@@ -50,8 +59,6 @@ public class ParentController {
         String username = authentication.getName();
         Student student = studentRepository.findByEmail(username);
 
-        sideNavLinks = Link.addLinks("parent");
-
         model.addAttribute("sideNavLinks", sideNavLinks);
         model.addAttribute("pageTitle", "parent Dashboard");
 
@@ -60,7 +67,7 @@ public class ParentController {
     }
     @GetMapping("/parent/notifications")
     public String parentNotification(Model model, @AuthenticationPrincipal UserDetails userDetails){
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new IllegalArgumentException("User not found"));
         List<Notification> receivedNotifications = user.getReceivedNotifications();
 
         model.addAttribute("receivedNotifications", receivedNotifications);
@@ -76,8 +83,6 @@ public class ParentController {
 
         List<Subject> subjects = subjectRepository.findAll();
 
-        sideNavLinks = Link.addLinks("parent");
-
         model.addAttribute("sideNavLinks", sideNavLinks);
         model.addAttribute("subjects", subjects);
         model.addAttribute("pageTitle", "Student Dashboard");
@@ -85,31 +90,90 @@ public class ParentController {
         return "parent/subjects";
     }
 
-    @GetMapping("/parent/subjects/{subject_code}")
-    public String studentSubjectDetails(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("subject_code") String subject_code, Model model) {
-        sideNavLinks = Link.addLinks("parent");
+    @GetMapping("/parent/child")
+    public String getChild(
+            @AuthenticationPrincipal UserDetails userDetails,
+            Model model
+    ) {
 
-        Student student = studentRepository.findByUsername(userDetails.getUsername());
-        Subject subject = subjectRepository.findByCode(subject_code);
-        List<SubjectClass> subjectClasses = subject.getSubjectClasses();
-        List<Enrollment> enrollments = new ArrayList<>();
+        Parent parent = (Parent) userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        Student child = studentRepository.findByStudentId(parent.getStudent().getStudentId());
+        List<Enrollment> enrollments = child.getEnrollments();
+        List<SubjectClass> subjectClasses = new ArrayList<>();
+        List<Subject> subjects = new ArrayList<>();
 
-        Map<SubjectClass, Enrollment> classEnrollmentMap = new HashMap<>();
-
-        for (SubjectClass subjectClass : subjectClasses) {
-            Enrollment enrollment = enrollmentRepository.findByStudentIdAndSubjectClassId(student.getId(), subjectClass.getId());
-            classEnrollmentMap.put(subjectClass, enrollment);  // Add to the map, enrollment could be null if not enrolled
+        for (Enrollment enrollment : enrollments) {
+            SubjectClass subjectClass = enrollment.getSubjectClass();
+            subjectClasses.add(subjectClass);
+            subjects.add(subjectClass.getSubject());
         }
 
+
         model.addAttribute("sideNavLinks", sideNavLinks);
-        model.addAttribute("subject", subject);
-        model.addAttribute("enrollments", enrollments);
+        model.addAttribute("child", child);
         model.addAttribute("subjectClasses", subjectClasses);
-        model.addAttribute("student", student);
-        model.addAttribute("classEnrollmentMap", classEnrollmentMap);
         model.addAttribute("pageTitle", "Student Dashboard");
         // Get the authenticated user
-        return "parent/subject-details";
+        return "parent/child";
     }
+
+    @GetMapping("/parent/child/class/{classId}")
+    public String studentSubjectDetails(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable("classId") Long classId, 
+            Model model) {
+
+        Parent parent = parentRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        Student student = parent.getStudent();
+        SubjectClass subjectClass = subjectClassRepository.findById(classId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        List<Session> sessions = subjectClass.getSessions();
+
+        Map<Session, Attendance> sessionEnrollmentHashMap = new LinkedHashMap<>();
+
+        for(Session session : sessions) {
+            Attendance attendance = attendanceRepository.findByStudentIdAndSessionId(student.getId(), session.getId());
+            sessionEnrollmentHashMap.put(session, attendance);
+        }
+
+
+        model.addAttribute("sideNavLinks", sideNavLinks);
+        model.addAttribute("attendances", sessionEnrollmentHashMap);
+        model.addAttribute("student", student);
+        model.addAttribute("classEnrollmentMap", sessionEnrollmentHashMap);
+        model.addAttribute("pageTitle", "Student Dashboard");
+        // Get the authenticated user
+        return "parent/class-details";
+    }
+
+
+    @GetMapping("/parent/profile")
+    public String parentProfile(
+            @AuthenticationPrincipal UserDetails userDetails,
+            Model model,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws IOException {
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElse(null);
+        model.addAttribute("user", user);
+        model.addAttribute("sideNavLinks", sideNavLinks);
+
+        return "/profile";
+    }
+
+
+    @GetMapping("/parent/profile/edit")
+    public String parentProfileEdit(
+            @AuthenticationPrincipal UserDetails userDetails,
+            Model model,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws IOException {
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElse(null);
+        model.addAttribute("user", user);
+        model.addAttribute("sideNavLinks", sideNavLinks);
+
+        return "/edit-profile";
+    }
+
 
 }

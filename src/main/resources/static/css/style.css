@@ -153,13 +153,11 @@ body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
 }
 
 .card-link {
-    background-color: #007bff; /* Primary blue background */
-    color: #fff;               /* White text */
     text-align: center;        /* Center the text */
     padding: 30px;             /* Space inside the cards */
     flex-grow: 1;              /* Width and height to make square */
     height: 150px;
-    border-radius: 10px;       /* Rounded corners */
+    border-radius: 8px;       /* Rounded corners */
     text-decoration: none;     /* Remove underline from links */
     display: flex;
     flex-direction: column;/* Flex to center content */
@@ -167,6 +165,8 @@ body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
     gap: 10px;
     align-items: center;
     transition: 0.2s;
+    border: #007bff solid 1px;
+    color: black;
 }
 
 .card-link:hover {

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout-dashboard :: head(name='Parent Dashboard')"><title>User Dash</title></head>
+
+<body th:replace="layout-dashboard :: body(sideNavLinks=${sideNavLinks})">
+
+<div th:fragment="main" class="d-flex">
+    <section>
+        <h1 th:text="#{}"></h1>
+    </section>
+    <section class="">
+        <div class="d-flex justify-content-between mb-3">
+            <h3 class="mb-2">Classes</h3>
+        </div>
+        <div class="session-grid">
+            <div class="card col" th:each="subjectClass : ${subjectClasses}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="fs-4 m-0" th:text="${subjectClass.getDay()}"></h5>
+                        <h6 class="badge bg-primary d-flex justify-content-between rounded-pill fw-light my-auto"  th:text="${subjectClass.getPeriod().getTime()}+${subjectClass.getPeriod().getTime().getHour() > 11 ? ' pm' : ' am'}"></h6>
+                    </div>
+
+                    <h6 class="card-subtitle mb-2 text-muted"  th:text="'Room: ' + ${subjectClass.getRoomCode()}"></h6>
+
+                    <a class="btn-sm btn btn-outline-secondary" th:href="@{'/parent/child/class/' + ${subjectClass.getId()}}">View</a>
+
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+</div>
+
+</body>
+</html>

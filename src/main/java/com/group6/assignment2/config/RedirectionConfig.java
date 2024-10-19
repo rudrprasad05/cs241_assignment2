@@ -3,6 +3,8 @@ package com.group6.assignment2.config;
 import com.group6.assignment2.entity.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.IOException;
 
@@ -37,6 +39,24 @@ public class RedirectionConfig {
             return "redirect:/teacher/notifications/send";
         } else if (user instanceof Admin) {
             return "redirect:/admin/notifications/send";
+        } else {
+            return "redirect:/";
+        }
+
+    }
+
+    public static String RedirectToEditProfile(User user, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if(user == null) {
+            return "redirect:/auth/login";
+        }
+        if (user instanceof Student) {
+            return "redirect:/student/profile/edit";
+        } else if (user instanceof Parent) {
+            return "redirect:/parent/profile/edit";
+        } else if (user instanceof Teacher) {
+            return "redirect:/teacher/profile/edit";
+        } else if (user instanceof Admin) {
+            return "redirect:/admin/profile/edit";
         } else {
             return "redirect:/";
         }

@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -107,7 +106,7 @@ public class GetAdminController {
 
     @GetMapping("/admin/users/{id}")
     public String adminUsers(@PathVariable("id") Long id, Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-       User user = userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+       User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
        Student s;
        Teacher t;
@@ -155,7 +154,7 @@ public class GetAdminController {
 
     @GetMapping("/admin/users/{id}/edit")
     public String adminUsersEdit(@PathVariable("id") Long id, Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        User user = userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Student s;
         Teacher t;
@@ -206,7 +205,7 @@ public class GetAdminController {
     @GetMapping("/admin/dashboard")
     public String userDashboard(Model model, Authentication authentication) {
         String username = authentication.getName();
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("User not found"));
         long userCount = studentRepository.count();
         long notificationCount = notificationRepository.countUnseenNotificationsByReceiver(user.getId());
         model.addAttribute("sideNavLinks", sideNavLinks);
@@ -233,7 +232,7 @@ public class GetAdminController {
 
     @GetMapping("/admin/notifications")
     public String adminNotification(Model model, @AuthenticationPrincipal UserDetails userDetails){
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new IllegalArgumentException("User not found"));
         List<Notification> receivedNotifications = user.getReceivedNotifications();
 
         model.addAttribute("receivedNotifications", receivedNotifications);
@@ -247,7 +246,7 @@ public class GetAdminController {
     @GetMapping("/admin/notifications/send")
     public String adminSendNotification(Model model, @AuthenticationPrincipal UserDetails userDetails){
 
-        Admin admin = (Admin) userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        Admin admin = (Admin) userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new IllegalArgumentException("User not found"));
         List<Notification> receivedNotifications = admin.getReceivedNotifications();
 
         List<User> receivers = getEligibleReceivers(admin);
@@ -258,6 +257,34 @@ public class GetAdminController {
         model.addAttribute("notificationTypes", Arrays.asList(Notification.NotificationType.values()));
 
         return "admin/sendNotifications";  // Refers to src/main/resources/templates/user/dashboard.html
+    }
+
+    @GetMapping("/admin/profile")
+    public String adminProfile(
+            @AuthenticationPrincipal UserDetails userDetails,
+            Model model,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws IOException {
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElse(null);
+        model.addAttribute("user", user);
+        model.addAttribute("sideNavLinks", sideNavLinks);
+
+        return "/profile";
+    }
+
+    @GetMapping("/admin/profile/edit")
+    public String adminProfileEdit(
+            @AuthenticationPrincipal UserDetails userDetails,
+            Model model,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws IOException {
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElse(null);
+        model.addAttribute("user", user);
+        model.addAttribute("sideNavLinks", sideNavLinks);
+
+        return "/edit-profile";
     }
 
     private List<User> getEligibleReceivers(User user) {

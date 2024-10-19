@@ -7,7 +7,6 @@ import com.group6.assignment2.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -99,7 +98,7 @@ public class PostAdminController {
     }
 
     @PostMapping("/admin/invite-parent")
-    public String inviteParent(@RequestParam("personalEmail") String personalEmail, @RequestParam("password") String password, @RequestParam("studentId") String studentId, @RequestParam("fName") String fName, @RequestParam("lName") String lName, Model model, @AuthenticationPrincipal UserDetails userDetails) {
+    public String inviteParent(RedirectAttributes redirectAttributes,@RequestParam("personalEmail") String personalEmail, @RequestParam("password") String password, @RequestParam("studentId") String studentId, @RequestParam("fName") String fName, @RequestParam("lName") String lName, Model model, @AuthenticationPrincipal UserDetails userDetails) {
 
         String id = generateId("P");
         String emailString = id + "@parent.com";
@@ -117,8 +116,12 @@ public class PostAdminController {
         sendNotificationToAdmin("parent");
 
         model.addAttribute("inviteLink", "/invite/" + inviteLinkCode);
+        redirectAttributes.addFlashAttribute("toastMessage", "New parent was invited");
+        redirectAttributes.addFlashAttribute("toastType", "success");  // You can send 'success', 'error', etc.
 
-        return "redirect:/admin/invite-parent";
+
+
+        return "redirect:/admin/invite-user";
     }
 
     private void sendNotificationToAdmin(String type) {
@@ -146,7 +149,7 @@ public class PostAdminController {
         String message = "You have been invited to join us on our attendance management system";
         String title = "Welcome!!";
         Notification.NotificationType notificationType = Notification.NotificationType.INFO;
-        User sender =  userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User sender =  userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new IllegalArgumentException("User not found"));
         ;
         Notification notification = new Notification(message, title, notificationType, sender, user);
         notificationRepository.save(notification);
