@@ -91,6 +91,11 @@ public class AuthController {
         Notification notification = new Notification(message, title, notificationType, admin, student);
         notificationRepository.save(notification);
 
+        message = "A new student has joined the system. Go to users to approve their application";
+        title = "New Student!";
+        Notification notificationAdmin = new Notification(message, title, notificationType, admin, admin);
+        notificationRepository.save(notificationAdmin);
+
         Email email = getEmail(personalEmail, inviteLinkCode, studentId);
         emailRepository.save(email);
         EmailController.SendAutomatedEmail(email);

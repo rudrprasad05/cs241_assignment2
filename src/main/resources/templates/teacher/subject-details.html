@@ -12,9 +12,9 @@
         <span class="text-uppercase" th:text="${subject.getCode()}"></span>
     </section>
 
-
     <section class="my-4">
         <h3 class="mb-2">Classes</h3>
+        <div class="no-data-box d-flex" th:if="${#lists.isEmpty(subject.getSubjectClasses())}"><p class="mx-auto my-auto">No classes scheduled for now. Check with your supervisor.</p></div>
         <div class="session-grid">
             <div class="card col me-3" th:each="subjectClass : ${subject.getSubjectClasses()}">
                 <div class="card-body">
