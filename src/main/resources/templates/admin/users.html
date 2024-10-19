@@ -7,9 +7,10 @@
 
 <div th:fragment="main" class="">
 
-    <div class="main">
-        <h1>Users</h1>
-    </div>
+    <section class="d-flex justify-content-between mb-3">
+        <h1 class="">Users</h1>
+        <a href="/admin/invite-user" class="btn btn-primary" >Add New</a>
+    </section>
 
     <table th:if="${!allUsers.isEmpty()}" class="table align-middle mb-0 bg-white">
         <thead class="bg-light">
@@ -48,6 +49,32 @@
 
         </tbody>
     </table>
+
+    <nav aria-label="Page navigation example" class="mt-4 d-flex">
+        <ul class="pagination  mx-auto align-items-center ">
+            <li class="page-item">
+               <span th:if="${prevDisabled}" class="pe-none page-link disabled" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </span>
+                <a th:unless="${prevDisabled}" class="page-link" th:href="@{'?page='+ (${currentPage - 1})}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li th:each="pageNumber : ${pageNumbers}" >
+                <a th:text="${pageNumber}" class="page-link" th:href="${'?page='+pageNumber}">1</a>
+            </li>
+
+            <li class="page-item">
+                <span th:if="${nextDisabled}" class="pe-none page-link disabled" aria-label="Previous">
+                    <span aria-hidden="true">&raquo;</span>
+                </span>
+                <a th:unless="${nextDisabled}" class="page-link" th:href="@{'?page='+ ${currentPage + 1}}" aria-label="Previous">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+
+            </li>
+        </ul>
+    </nav>
 
 </div>
 

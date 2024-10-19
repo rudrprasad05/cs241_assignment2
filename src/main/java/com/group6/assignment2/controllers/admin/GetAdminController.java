@@ -66,16 +66,38 @@ public class GetAdminController {
             Model model,
             HttpServletRequest request,
             HttpServletResponse response,
-            @RequestParam(defaultValue = "0") int page
-    ) throws IOException {
+            @RequestParam(defaultValue = "1") int page
+    ) {
 
-        List<User> allUsers = userRepository.findAll();
-        Page<User> allUsersPage = userRepository.findAll(PageRequest.of(page, 1));
 
-        allUsers.sort(Comparator.comparing(User::getId));
+        if(page <= 0 ){
+            return "redirect:/admin/users";
+        }
+
+        List<Integer> pageNumbers = new ArrayList<>();
+
+        double subjectCount = userRepository.count();
+        double pageSize = 10L;
+        int pages = (int) Math.ceil(subjectCount / pageSize);
+
+        for(int i = 1; i <= pages; i++) {
+            pageNumbers.add(i);
+        }
+
+        boolean prevDisabled = page == 1;
+        boolean nextDisabled = page >= pages;
+
+        System.out.println(prevDisabled);
+        System.out.println(nextDisabled);
+
+        Page<User> allUsersPage = userRepository.findAll(PageRequest.of(page -1, (int) pageSize));
 
         model.addAttribute("sideNavLinks", sideNavLinks);
         model.addAttribute("allUsers", allUsersPage);
+        model.addAttribute("pageNumbers", pageNumbers);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("prevDisabled", prevDisabled);
+        model.addAttribute("nextDisabled", nextDisabled);
         model.addAttribute("pageTitle", "Admin Dashboard");
         model.addAttribute("message", "Welcome to the Admin Dashboard");
 

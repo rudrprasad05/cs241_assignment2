@@ -55,6 +55,31 @@
 
                 </tbody>
             </table>
+            <nav aria-label="Page navigation example" class="mt-4 d-flex">
+                <ul class="pagination  mx-auto align-items-center ">
+                    <li class="page-item">
+               <span th:if="${prevDisabled}" class="pe-none page-link disabled" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </span>
+                        <a th:unless="${prevDisabled}" class="page-link" th:href="@{'?page='+ (${currentPage - 1})}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li th:each="pageNumber : ${pageNumbers}" >
+                        <a th:text="${pageNumber}" class="page-link" th:href="${'?page='+pageNumber}">1</a>
+                    </li>
+
+                    <li class="page-item">
+                <span th:if="${nextDisabled}" class="pe-none page-link disabled" aria-label="Previous">
+                    <span aria-hidden="true">&raquo;</span>
+                </span>
+                        <a th:unless="${nextDisabled}" class="page-link" th:href="@{'?page='+ ${currentPage + 1}}" aria-label="Previous">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 
