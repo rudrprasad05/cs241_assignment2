@@ -62,6 +62,14 @@ public class Enrollment {
         this.subject = subject;
     }
 
+    public  Enrollment(Student student, SubjectClass subjectClass, Subject subject, EnrollmentStatus isAccepted) {
+        this.createdAt = LocalDateTime.now();
+        this.isAccepted = isAccepted;
+        this.student = student;
+        this.subjectClass = subjectClass;
+        this.subject = subject;
+    }
+
     public Long getId() {
         return id;
     }

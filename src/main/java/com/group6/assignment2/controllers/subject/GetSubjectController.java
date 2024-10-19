@@ -40,6 +40,8 @@ public class GetSubjectController {
     private AttendanceRepository attendanceRepository;
     @Autowired
     private SessionRepository sessionRepository;
+    @Autowired
+    private StudentRepository studentRepository;
 
     public GetSubjectController() {
         sideNavLinks = Link.addLinks("admin");
@@ -77,6 +79,8 @@ public class GetSubjectController {
         List<SubjectClass> subjectClass = subjectClassRepository.findBySubjectCode(subject_code);
         List<Enrollment> enrollments = subject.getEnrollments();
         List<Period> periodsList = periodRepository.findAll();
+        List<Teacher> teachers = teacherRepository.findAll();
+        List<Student> students = studentRepository.findStudentsNotEnrolledInSubject(subject.getId());
 
         // Check if subject exists
 
@@ -85,7 +89,9 @@ public class GetSubjectController {
         model.addAttribute("sideNavLinks", sideNavLinks);
         model.addAttribute("enrollments", enrollments);
         model.addAttribute("subject", subject);
+        model.addAttribute("students", students);
         model.addAttribute("periods", periodsList);
+        model.addAttribute("teachers", teachers);
         model.addAttribute("subjectClass", subjectClass);
 
         return "admin/subject-details";

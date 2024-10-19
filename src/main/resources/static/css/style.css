@@ -17,8 +17,16 @@ body {
 .session-grid{
     width: 100%;
     display: grid;
+    gap: 12px;
     grid-template-columns: repeat(2, 1fr);
 }
+
+.flex-grid-one-col{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
 .container form{
     width: 100%;
     height: 100%;

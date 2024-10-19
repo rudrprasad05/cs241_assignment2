@@ -18,7 +18,9 @@
         <section class="my-4">
             <div class="d-flex justify-content-between mb-3">
                 <h3 class="mb-2">Teacher</h3>
-                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addClassModal">Change</button>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#changeTeacherForSubject">Change</button>
+                <th:block th:replace="modals/changeTeacherForSubject :: modal(id=${'changeTeacherForSubject'}, teachers=${teachers}, subject=${subject})">modal</th:block>
+
             </div>
             <div class="card my-3">
                 <div class="card-body">
@@ -27,25 +29,22 @@
                         <h6 class="badge bg-success d-flex justify-content-between rounded-pill fw-light my-auto">Teacher</h6>
                     </div>
                     <a class="btn-sm btn btn-outline-secondary" th:href="@{/admin/users/{code}(code=${subject.teacher.getId()})}">View</a>
-
                 </div>
             </div>
         </section>
-
-
     </div>
-
     <div>
-        <th:block th:replace="modals/addClassModal :: modal(id=${'addClassModal'}, subjectCode=${subject.getCode()}, periods=${periods})">modal</th:block>
         <p th:if="${subjectClass.isEmpty()}">No data available.</p>
 
         <section class="my-4">
             <div class="d-flex justify-content-between mb-3">
                 <h3 class="mb-2">Classes</h3>
                 <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addClassModal">Add Class</button>
+                <th:block th:replace="modals/addClassModal :: modal(id=${'addClassModal'}, subjectCode=${subject.getCode()}, periods=${periods})">modal</th:block>
+
             </div>
             <div class="session-grid">
-                <div class="card col me-3" th:each="subjectClass : ${subject.getSubjectClasses()}">
+                <div class="card col" th:each="subjectClass : ${subject.getSubjectClasses()}">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h5 class="fs-4 m-0" th:text="${subjectClass.getDay()}"></h5>
@@ -54,7 +53,7 @@
 
                         <h6 class="card-subtitle mb-2 text-muted"  th:text="'Room: ' + ${subjectClass.getRoomCode()}"></h6>
 
-                        <a class="btn-sm btn btn-outline-secondary" th:href="@{/teacher/subjects/{code}/{session}(code=${subject.getCode()}, session=${subjectClass.getId()})}">View</a>
+                        <a class="btn-sm btn btn-outline-secondary" th:href="@{/admin/subjects/{code}/{session}(code=${subject.getCode()}, session=${subjectClass.getId()})}">View</a>
                     </div>
                 </div>
             </div>
@@ -65,11 +64,13 @@
     <div>
         <div class="d-flex justify-content-between mb-3">
             <h3 class="mb-2">Students</h3>
-            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addClassModal">Add Student</button>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addStudentToSubjectClass">Add Student</button>
+            <th:block th:replace="modals/addStudentToSubjectClass :: modal(id=${'addStudentToSubjectClass'}, students=${students}, subjectClasses=${subjectClass})">modal</th:block>
+
         </div>
         <p th:if="${enrollments.isEmpty()}">No data available.</p>
 
-        <div th:if="${!enrollments.isEmpty()}">
+        <div th:if="${!enrollments.isEmpty()}" class="flex-grid-one-col">
             <div class="card" th:each="enrollment : ${enrollments}">
                 <div class="card-body">
                     <span th:text="${enrollment.getStudent().getStudentId()}"></span>
