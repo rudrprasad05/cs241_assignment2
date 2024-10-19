@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
+
 <!-- Use the base layout -->
-<head th:replace="layout-general :: head(pageTitle='Login')"></head>
+<head th:replace="layout-general :: head(pageTitle='Login')">
+    <link rel="stylesheet" th:href="@{/css/login.css}"/>
+</head>
 <body th:replace="layout-general :: body">
 <div th:fragment="main">
     <div class="container">
