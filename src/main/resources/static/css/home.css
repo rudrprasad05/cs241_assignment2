@@ -1,12 +1,11 @@
 .homebg {
-    object-fit: fill;
-    z-index: 0;
     position: absolute;
-    width: 100%;
-    height: 50%;
     top: 0;
     left: 0;
-    margin-top: 50px;
+    width: 100%;
+    height: 100vh; /* Full viewport height */
+    object-fit: cover;
+    z-index: -1; /* Image behind the text */
 }
 
 .containerhome {
@@ -19,31 +18,31 @@
     width: 60%;
     margin: auto;
     margin-top: 15%;
+    margin-bottom: 15%;
 
 }
-h1{
-    font-size: 60px;
+
+h1 {
+    font-size: 48px; /* Adjusted for better visibility */
     font-family: "Arial Black";
     text-align: center;
     font-style: italic;
+    color: #333; /* Darker color for better contrast */
 }
-p{
-    font-size: 20px;
 
+p {
+    font-size: 18px;
+    color: #555; /* Slightly darker for readability */
 }
+
 .containerhome .navlink {
-    display: block; /* Makes the link a block element */
-    width: max-content; /* Fits the width to the content of the link */
-    margin: 20px auto; /* Centers the link horizontally and adds vertical spacing */
-    border: 2px solid #008cff; /* Adds a light blue border around the link */
-    background-color: #008cff; /* Sets the background color to light blue */
-    padding: 10px; /* Adds some padding inside the border */
-    text-align: center; /* Centers the text inside the link */
-    color: white; /* Changes the text color to white */
-    text-decoration: none; /* Removes the underline from the link */
+    display: block;
+    width: max-content;
+    margin: 20px auto;
+    border: 2px solid #008cff;
+    background-color: #008cff;
+    padding: 12px;
+    text-align: center;
+    color: white;
+    text-decoration: none;
 }
-
-
-
-
-
