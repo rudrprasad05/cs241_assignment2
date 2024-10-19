@@ -1,0 +1,21 @@
+/* Add this in your home.css file or in a <style> tag within the HTML */
+body {
+    background-color: #f8f9fa; /* Setting the background color to a grey shade */
+}
+
+.container {
+    background-color: #ffffff; /* White background for the form */
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Box shadow for hovering effect */
+    margin-top: 50px; /* Adds some space at the top */
+}
+
+/* Optionally, ensure the overall body has full height and center the content vertically */
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

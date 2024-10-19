@@ -4,37 +4,20 @@ body{
 
 }
 .homebg {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
+   object-fit: contain;
+    margin-top: -120px;
+    margin-left: -110px;
     z-index: -1;
 }
-
-/* Container for text content */
-.container {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Uses the full viewport height */
-    width: 100vw; /* Uses the full viewport width */
-    text-align: center;
-    z-index: 1;
-}
-
-/* Text box styling */
-.text-box {
-    color: #000000; /* Adjusts the text color to white for better visibility */
-    background-color: rgba(255, 255, 255, 0.84); /* Darker background for readability */
-    padding: 20px;
-    border-radius: 10px;
-    width: fit-content; /* Ensures the background only spans the text width */
-    margin: auto; /* Centers the text block horizodntally */
-    width: 50%;
+.hometxt{
+    z-index: 0;
+    color: #000; /* Black color for text */
+    background-color: rgba(255, 255, 255, 0.84); /* Semi-transparent white for readability */
     padding: 25px;
+    border-radius: 10px;
+    width: 50%; /* Adjust width as needed */
+    margin: auto; /* Center the box */
 }
-p{
-    font-family: "arial";
-    font-size: 17px;
-}
+
+
+
