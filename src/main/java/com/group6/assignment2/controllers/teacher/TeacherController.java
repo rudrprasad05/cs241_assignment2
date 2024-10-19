@@ -207,6 +207,45 @@ public class TeacherController {
         return "teacher/attendance-details";
     }
 
+    @GetMapping("/teacher/users/{id}")
+    public String adminUsers(@PathVariable("id") Long id, Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        Student s;
+        Parent p;
+        if(user instanceof Student) {
+            s = (Student) user;
+            List<SubjectClass> classes = s.getEnrollments().stream()
+                    .map(Enrollment::getSubjectClass)
+                    .toList();
+            List<Parent> parents = s.getParents();
+            model.addAttribute("user", s);
+            model.addAttribute("type", "student");
+            model.addAttribute("parents", parents);
+            model.addAttribute("classes", classes);
+        }
+
+        else if(user instanceof Parent) {
+            p = (Parent) user;
+            User child = p.getStudent();
+            model.addAttribute("user", p);
+            model.addAttribute("child", child);
+            model.addAttribute("type", "parent");
+
+        }
+        else{
+            return "/";
+        }
+
+
+        model.addAttribute("sideNavLinks", sideNavLinks);
+        model.addAttribute("pageTitle", "Admin Dashboard");
+        model.addAttribute("message", "Welcome to the Admin Dashboard");
+
+        return "/teacher/user-details";
+
+    }
+
     public Map<Session, List<Attendance>> getSessionsWithAcceptedAttendances(SubjectClass subjectClass) {
         // Fetch all sessions for the given subject class, sorted by week
         List<Session> sessions = sessionRepository.findBySubjectClassOrderByWeekAsc(subjectClass);

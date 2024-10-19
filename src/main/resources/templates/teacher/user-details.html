@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout-dashboard :: head(name='Admin Dashboard')"></head>
+
+<body th:replace="layout-dashboard :: body(sideNavLinks=${sideNavLinks})">
+
+<div th:fragment="main" class="">
+
+    <div class="d-flex justify-content-between mb-3">
+        <h3>User Details</h3>
+        <a th:href="@{'/admin/users/' + ${user.getId()} + '/edit'}">Edit</a>
+    </div>
+    <div class="user-profile-data-cont">
+        <span>UserName</span>
+        <span th:text="${user.getUsername()}" class="form-control"></span>
+    </div>
+    <div class="user-profile-data-cont">
+        <span>first name</span>
+        <span th:text="${user.getFName()}" class="form-control"></span>
+    </div>
+    <div class="user-profile-data-cont">
+        <span>last name</span>
+        <span th:text="${user.getLName()}" class="form-control"></span>
+    </div>
+    <div class="user-profile-data-cont">
+        <span >Personal Email</span>
+        <span th:text="${user.getPersonalEmail()}" class="form-control"></span>
+    </div>
+
+    <div th:if="${type == 'student'}">
+        <div th:if="${#lists.isEmpty(classes)}">Not enrolled in any subjects</div>
+        <div th:if="${!#lists.isEmpty(classes)}">
+            <section class="my-4">
+                <div class="d-flex justify-content-between mb-3">
+                    <h3 class="mb-2">Classes</h3>
+
+                </div>
+                <div class="session-grid">
+                    <div class="card col" th:each="subjectClass : ${classes}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="fs-4 m-0" th:text="${subjectClass.getDay()}"></h5>
+                                <h6 class="badge bg-primary d-flex justify-content-between rounded-pill fw-light my-auto"  th:text="${subjectClass.getPeriod().getTime()}+${subjectClass.getPeriod().getTime().getHour() > 11 ? ' pm' : ' am'}"></h6>
+                            </div>
+
+                            <h6 class="card-subtitle mb-2 text-muted"  th:text="'Room: ' + ${subjectClass.getRoomCode()}"></h6>
+
+                            <a class="btn-sm btn btn-outline-secondary" th:href="@{/admin/subjects/{code}/{session}(code=${subjectClass.getSubject().getCode()}, session=${subjectClass.getId()})}">View</a>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+        </div>
+
+        <div th:if="${#lists.isEmpty(parents)}">No Associated Parents</div>
+        <div th:if="${!#lists.isEmpty(parents)}">
+            <h3 class="mb-2">Parents</h3>
+            <div class="d-flex gap-3 flex-column">
+                <div class="card w-100" th:each="parent : ${parents}">
+                    <div class="card-body d-flex justify-content-between">
+                        <div class="d-flex gap-3">
+                            <span th:text="${parent.getFName()}"></span>
+                            <span th:text="${parent.getLName()}"></span>
+                            <span class="text-muted" th:text="${parent.getPersonalEmail()}"></span>
+                        </div>
+                        <a th:href="@{'/admin/users/' + ${parent.getId()}}" type="button" class="btn btn-link btn-sm btn-rounded">
+                            Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div th:if="${type == 'teacher'}">
+        <div th:if="${#lists.isEmpty(subjects)}">Not enrolled in any subjects</div>
+        <div th:if="${!#lists.isEmpty(subjects)}">
+            <section class="my-4">
+                <div class="d-flex justify-content-between mb-3">
+                    <h3 class="mb-2">Classes</h3>
+
+                </div>
+                <main class="grid-3-cols">
+                    <div th:each="subject, i : ${subjects}" class="card">
+                        <img  th:src="@{'/images/bg'+${i.index}+'.png'}" class="card-img-top img-cover" alt="subject image">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="text-uppercase m-0" th:text="${subject.getCode()}"></h5>
+                                <div class="ml-auto d-flex gap-2 align-items-center">
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <svg style="width: 20px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+                                        <span th:text="${subject.getSubjectClasses().size()}"></span>
+
+                                    </div>
+
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <svg style="width: 20px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                                        </svg>
+                                        <span th:text="${subject.getEnrollments().size()}"></span>
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                            <p class="card-text text-capitalize"  th:text="${subject.getDescription()}">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                            <a class="btn-sm btn btn-outline-secondary" th:href="@{/admin/subjects/{code}(code=${subject.getCode()})}">View</a>
+                        </div>
+                    </div>
+                </main>
+
+            </section>
+        </div>
+    </div>
+
+    <div th:if="${type == 'parent'}">
+
+        <section class="my-4">
+            <div class="d-flex justify-content-between mb-3">
+                <h3 class="mb-2">Child</h3>
+            </div>
+            <main class="">
+                <div class="card w-100">
+                    <div class="card-body d-flex justify-content-between">
+                        <div class="d-flex gap-3">
+                            <span th:text="${child.getFName()}"></span>
+                            <span th:text="${child.getLName()}"></span>
+                            <span class="text-muted" th:text="${child.getPersonalEmail()}"></span>
+                        </div>
+                        <a th:href="@{'/admin/users/' + ${child.getId()}}" type="button" class="btn btn-link btn-sm btn-rounded">
+                            Details
+                        </a>
+                    </div>
+                </div>
+            </main>
+
+        </section>
+    </div>
+
+</div>
+
+
+</body>
+</html>
