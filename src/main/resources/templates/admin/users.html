@@ -56,12 +56,13 @@
                <span th:if="${prevDisabled}" class="pe-none page-link disabled" aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
                 </span>
-                <a th:unless="${prevDisabled}" class="page-link" th:href="@{'?page='+ (${currentPage - 1})}" aria-label="Previous">
+                <a th:unless="${prevDisabled}" class="page-link" th:href="@{'?page='+ ${currentPage - 1}}" aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
                 </a>
             </li>
             <li th:each="pageNumber : ${pageNumbers}" >
-                <a th:text="${pageNumber}" class="page-link" th:href="${'?page='+pageNumber}">1</a>
+                <a th:if="${pageNumber == currentPage}" th:text="${pageNumber}" class="page-link text-decoration-underline" th:href="@{'?page=' + ${pageNumber}}">1</a>
+                <a th:if="${pageNumber != currentPage}" th:text="${pageNumber}" class="page-link" th:href="@{'?page=' + ${pageNumber}}">1</a>
             </li>
 
             <li class="page-item">

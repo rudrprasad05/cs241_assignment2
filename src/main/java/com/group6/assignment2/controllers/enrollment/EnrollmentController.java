@@ -95,15 +95,13 @@ public class EnrollmentController {
 
         Long id = Long.parseLong(enrollmentId);
         Enrollment enrollment = enrollmentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Enrollment not found"));
-        enrollment.setAccepted(Enrollment.EnrollmentStatus.REJECTED);
 
-        enrollmentRepository.save(enrollment);
+        enrollmentRepository.delete(enrollment);
 
         List<Session> sessionsList = enrollment.getSubjectClass().getSessions();
         for(Session session : sessionsList) {
             for(Attendance a : session.getAttendanceRecords()){
                 if(Objects.equals(a.getStudent(), enrollment.getStudent())){
-                    System.out.println("delelledddd");
                     attendanceRepository.delete(a);
                 }
             }

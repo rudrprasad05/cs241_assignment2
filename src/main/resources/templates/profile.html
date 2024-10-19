@@ -7,16 +7,28 @@
 
 <div th:fragment="main" class="">
 
-    <div class="main">
-        <h1>User</h1>
-        <a href="/redirect/profile/edit">Edit</a>
+    <div class="d-flex justify-content-between mb-3">
+        <h3>My Profile</h3>
+        <a th:href="@{'/admin/users/' + ${user.getId()} + '/edit'}">Edit</a>
     </div>
 
-    <p class="fw-normal mb-1" th:text="${user.getUsername()}"></p>
+    <div class="user-profile-data-cont">
+        <span>UserName</span>
+        <span th:text="${user.getUsername()}" class="form-control"></span>
+    </div>
+    <div class="user-profile-data-cont">
+        <span>first name</span>
+        <span th:text="${user.getFName()}" class="form-control"></span>
+    </div>
+    <div class="user-profile-data-cont">
+        <span>last name</span>
+        <span th:text="${user.getLName()}" class="form-control"></span>
+    </div>
 
-    <p class="fw-normal mb-1" th:text="${user.getRole()}"></p>
-
-    <p class="fw-normal mb-1" th:text="${user.getEmail()}"></p>
+    <div class="user-profile-data-cont">
+        <span >Personal Email</span>
+        <span th:text="${user.getPersonalEmail()}" class="form-control"></span>
+    </div>
 
     <div th:if="${type == 'student'}">
         <div th:if="${#lists.isEmpty(classes)}">Not enrolled in any subjects</div>

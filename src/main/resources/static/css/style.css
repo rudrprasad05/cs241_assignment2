@@ -35,6 +35,10 @@ body {
     grid-template-columns: repeat(3, 1fr);
 }
 
+.user-profile-data-cont{
+    margin: 8px 0;
+}
+
 .flex-grid-one-col{
     display: flex;
     flex-direction: column;

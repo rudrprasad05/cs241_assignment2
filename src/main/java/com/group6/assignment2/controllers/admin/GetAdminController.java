@@ -125,7 +125,9 @@ public class GetAdminController {
        }
        else if(user instanceof Teacher) {
            t = (Teacher) user;
+           List<Subject> subjects = t.getSubjects();
            model.addAttribute("user", t);
+           model.addAttribute("subjects", subjects);
            model.addAttribute("type", "teacher");
 
        }
@@ -137,7 +139,9 @@ public class GetAdminController {
        }
        else if(user instanceof Parent) {
            p = (Parent) user;
+           User child = p.getStudent();
            model.addAttribute("user", p);
+           model.addAttribute("child", child);
            model.addAttribute("type", "parent");
 
        }
