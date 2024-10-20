@@ -11,8 +11,8 @@
 
     <div class="main">
         <section class="d-flex fs-3 gap-2">
-            <span class="text-capitalize" th:text="${subjectClass.getSubject().getDescription()}"></span>
             <span class="text-uppercase" th:text="${subjectClass.getSubject().getCode()}"></span>
+            <span class="text-capitalize" th:text="${subjectClass.getSubject().getName()}"></span>
         </section>
         <div class="card my-3">
             <div class="card-body">

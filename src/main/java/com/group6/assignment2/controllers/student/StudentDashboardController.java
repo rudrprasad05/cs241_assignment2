@@ -67,10 +67,13 @@ public class StudentDashboardController {
                 .map(Enrollment::getSubject)
                 .toList();
 
+        Set<Subject> uniqueSet = new HashSet<>(enrolledSubjects); // HashSet removes duplicates
+        List<Subject> uniqueList = new ArrayList<>(uniqueSet);
+
         sideNavLinks = Link.addLinks("student");
 
         model.addAttribute("sideNavLinks", sideNavLinks);
-        model.addAttribute("enrolledSubjects", enrolledSubjects);
+        model.addAttribute("enrolledSubjects", uniqueList);
         model.addAttribute("pageTitle", "User Dashboard");
 
         return "student/dashboard";
@@ -101,10 +104,12 @@ public class StudentDashboardController {
                 .map(Enrollment::getSubject)
                 .toList();
 
+        Set<Subject> uniqueSet = new HashSet<>(enrolledSubjects); // HashSet removes duplicates
+        List<Subject> uniqueList = new ArrayList<>(uniqueSet);
 
         model.addAttribute("sideNavLinks", sideNavLinks);
         model.addAttribute("subjects", subjects);
-        model.addAttribute("enrolledSubjects", enrolledSubjects);
+        model.addAttribute("enrolledSubjects", uniqueList);
         model.addAttribute("pageTitle", "Student Dashboard");
         // Get the authenticated user
         return "student/subjects";
@@ -115,10 +120,11 @@ public class StudentDashboardController {
 
         Student student = studentRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new IllegalArgumentException("User not found"));
         Subject subject = subjectRepository.findByCode(subject_code);
-        List<SubjectClass> subjectClasses = subject.getSubjectClasses();
+        List<SubjectClass> subjectClasses = subjectClassRepository.findBySubjectCode(subject_code);
         List<Enrollment> enrollments = new ArrayList<>();
 
         Map<SubjectClass, Enrollment> classEnrollmentMap = new HashMap<>();
+        subjectClasses.sort(Comparator.comparing(SubjectClass::getId));
 
         for (SubjectClass subjectClass : subjectClasses) {
             Enrollment enrollment = enrollmentRepository.findByStudentIdAndSubjectClassId(student.getId(), subjectClass.getId());

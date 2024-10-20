@@ -68,10 +68,10 @@ public class EnrollmentController {
 
     @PostMapping("/admin/enrollment/change-status/accepted")
     public String accepted(RedirectAttributes redirectAttributes, @RequestParam("enrollmentId") String enrollmentId) {
-        System.out.println("hit");
         Long id = Long.parseLong(enrollmentId);
         Enrollment enrollment = enrollmentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Enrollment not found"));
         enrollment.setAccepted(Enrollment.EnrollmentStatus.ACCEPTED);
+        Student student = enrollment.getStudent();
 
         enrollmentRepository.save(enrollment);
 
@@ -81,6 +81,14 @@ public class EnrollmentController {
             Attendance attendance = new Attendance(Attendance.AttendanceType.NOT_MARKED, "n/a", enrollment.getStudent(), session);
             attendanceRepository.save(attendance);
         }
+
+
+        String message = "Your enrollment has been accepted";
+        String title = "Congrats!";
+        Notification.NotificationType notificationType = Notification.NotificationType.SUCCESS;
+
+        Notification notification = new Notification(message, title, notificationType, student, student);
+        notificationRepository.save(notification);
 
         redirectAttributes.addFlashAttribute("toastMessage", "Enrollment Status changed to accepted");
         redirectAttributes.addFlashAttribute("toastType", "success");  // You can send 'success', 'error', etc.

@@ -11,8 +11,8 @@
 
     <div class="main">
         <section class="d-flex fs-3 gap-2">
-            <span class="text-capitalize" th:text="${subject.getDescription()}"></span>
             <span class="text-uppercase" th:text="${subject.getCode()}"></span>
+            <span class="text-capitalize" th:text="${subject.getName()}"></span>
         </section>
 
         <section class="my-4">
@@ -25,7 +25,7 @@
             <div class="card my-3">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h5 class="fs-4 m-0" th:text="${subject.teacher.getFName()}" ></h5>
+                        <h5 class="fs-4 m-0 text-capitalize" th:text="${subject.teacher.username + ' '+subject.teacher.getFName() + ' ' + subject.teacher.getLName()}" ></h5>
                         <h6 class="badge bg-success d-flex justify-content-between rounded-pill fw-light my-auto">Teacher</h6>
                     </div>
                     <a class="btn-sm btn btn-outline-secondary" th:href="@{/admin/users/{code}(code=${subject.teacher.getId()})}">View</a>
@@ -52,9 +52,10 @@
                 <h3 class="mb-2">Classes</h3>
                 <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addClassModal">Add Class</button>
                 <th:block th:replace="modals/addClassModal :: modal(id=${'addClassModal'}, subjectCode=${subject.getCode()}, periods=${periods})">modal</th:block>
-
             </div>
-            <div class="session-grid">
+            <div class="no-data-box d-flex" th:if="${subject.getSubjectClasses().isEmpty()}"><p class="mx-auto my-auto">No classes yet. Ask your admin to create some</p></div>
+
+            <div class="session-grid" th:if="${!subject.getSubjectClasses().isEmpty()}">
                 <div class="card col" th:each="subjectClass : ${subject.getSubjectClasses()}">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -87,7 +88,8 @@
             <th:block th:replace="modals/addStudentToSubjectClass :: modal(id=${'addStudentToSubjectClass'}, students=${students}, subjectClasses=${subjectClass})">modal</th:block>
 
         </div>
-        <p th:if="${enrollments.isEmpty()}">No data available.</p>
+        <div class="no-data-box d-flex" th:if="${enrollments.isEmpty()}"><p class="mx-auto my-auto">No students yet. Wait for them to join</p></div>
+
 
         <div th:if="${!enrollments.isEmpty()}" class="flex-grid-one-col">
             <div class="card ">

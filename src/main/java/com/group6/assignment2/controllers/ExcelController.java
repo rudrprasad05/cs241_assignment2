@@ -157,12 +157,12 @@ public class ExcelController {
             @RequestParam("subjectCode") String subjectCode,
             @RequestParam("sessionId") Long sessionId
     ) {
+        String referer = request.getHeader("Referer");
 
         Subject subject = subjectRepository.findByCode(subjectCode);
         Session session = sessionRepository.findById(sessionId).orElse(null);
 
         if(session == null || subject == null) {
-            String referer = request.getHeader("Referer");
             redirectAttributes.addFlashAttribute("toastMessage", "Report could not be downloaded");
             redirectAttributes.addFlashAttribute("toastType", "fail");
             return "redirect:" + referer;
@@ -175,21 +175,17 @@ public class ExcelController {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
         try (Workbook workbook = new XSSFWorkbook(); ServletOutputStream outputStream = response.getOutputStream()) {
-            Sheet subjectSheet = workbook.createSheet("Attendance Details");
-
             Sheet attendanceSheet = workbook.createSheet("Attendance Report");
 
             // Create header row
             Row headerRow = attendanceSheet.createRow(0);
             headerRow.createCell(0).setCellValue("Student Name");
             headerRow.createCell(1).setCellValue("Email");
-            headerRow.createCell(2).setCellValue("Attendance Date");
-            headerRow.createCell(3).setCellValue("Status");
+            headerRow.createCell(2).setCellValue("Status");
 
             attendanceSheet.setColumnWidth(0, 5000);  // Student Name
             attendanceSheet.setColumnWidth(1, 8000);  // Email
             attendanceSheet.setColumnWidth(2, 5000);  // Attendance Date
-            attendanceSheet.setColumnWidth(3, 4000);  // Status
 
             // Iterate over each attendance record and print the information
             int rowNum = 1;
@@ -201,7 +197,7 @@ public class ExcelController {
                     Row row = attendanceSheet.createRow(rowNum++);
                     row.createCell(0).setCellValue(student.getFName());
                     row.createCell(1).setCellValue(student.getEmail());
-                    row.createCell(3).setCellValue(attendance.isPresent().toString());
+                    row.createCell(2).setCellValue(attendance.isPresent().toString());
                 }
             }
             // Populate your sheet here with data
@@ -212,7 +208,6 @@ public class ExcelController {
 
         } catch (IOException e) {
             logger.error("Failed to generate Excel file", e);
-            String referer = request.getHeader("Referer");
             redirectAttributes.addFlashAttribute("toastMessage", "Report could not be downloaded");
             redirectAttributes.addFlashAttribute("toastType", "fail");  // You can send 'success', 'error', etc.
 
@@ -222,7 +217,6 @@ public class ExcelController {
         redirectAttributes.addFlashAttribute("toastMessage", "Report downloaded Successfully");
         redirectAttributes.addFlashAttribute("toastType", "success");  // You can send 'success', 'error', etc.
 
-        String referer = request.getHeader("Referer");
         return "redirect:" + referer;
     }
 

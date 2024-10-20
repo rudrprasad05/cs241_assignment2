@@ -8,7 +8,7 @@
 <div th:fragment="main" class="">
 
     <h2>Your current enrolled Subjects</h2>
-    <div class="no-data-box d-flex" th:if="${enrolledSubjects.isEmpty()}"><p class="mx-auto my-auto">No data available</p></div>
+    <div class="no-data-box d-flex" th:if="${enrolledSubjects.isEmpty()}"><p class="mx-auto my-auto">You haven't enrolled in any subjects</p></div>
     <table th:if="${!enrolledSubjects.isEmpty()}" class="table align-middle mb-0 bg-white">
         <thead class="bg-light">
         <tr>

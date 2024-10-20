@@ -33,7 +33,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="user" class="form-label">Select user</label>
+                            <label for="user" class="form-label">Select teacher</label>
                             <select class="form-select" id="user" name="teacherId" required>
                                 <option th:each="user : ${teachers}" th:value="${user.id}" th:text="${user.getFName()}"></option>
                             </select>

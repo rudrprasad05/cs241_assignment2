@@ -7,17 +7,21 @@
 <body th:replace="layout-general :: body">
 <div th:fragment="main">
 
+    <div>
+
         <div class="containerhome">
             <h1>Welcome to Your Learning Hub!</h1>
             <p>Dive into a sea of resources tailored just for you. Whether you're here to explore new subjects or master familiar ones, this is your space to learn, grow, and connect. Let's make every learning moment exciting and impactful!</p>
 
-                <a class="navlink" href="/auth/application">Apply Today!</a>
+            <a class="navlink" href="/auth/application">Apply Today!</a>
 
         </div>
 
-    <div class="homebg">
-        <img th:src="@{'/images/homebg.jpg'}" alt="Background image" th:height="800px" th:width="1520px" >
+        <div class="homebg">
+            <img th:src="@{'/images/homebg.jpg'}" alt="Background image" >
+        </div>
     </div>
+
 
     <!-- Background image included directly in the HTML -->
 

@@ -8,8 +8,8 @@
 <div th:fragment="main" class="">
 
     <section class="d-flex fs-3 gap-2">
-      <span class="text-capitalize" th:text="${subject.getDescription()}"></span>
         <span class="text-uppercase" th:text="${subject.getCode()}"></span>
+        <span class="text-capitalize" th:text="${subject.getName()}"></span>
     </section>
 
     <section class="my-4">

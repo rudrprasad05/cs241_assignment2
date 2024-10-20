@@ -4,6 +4,7 @@ import com.group6.assignment2.config.Link;
 import com.group6.assignment2.controllers.EmailController;
 import com.group6.assignment2.entity.*;
 import com.group6.assignment2.repository.*;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -122,6 +123,42 @@ public class PostAdminController {
 
 
         return "redirect:/admin/invite-user";
+    }
+
+    @PostMapping("/redirect/edit-user-details")
+    public String editUser(
+            RedirectAttributes redirectAttributes,
+            @RequestParam("username") String username,
+            @RequestParam("fName") String firstName,
+            @RequestParam("lName") String lastName,
+            @RequestParam("email") String email,
+            HttpServletRequest request,
+            Model model,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        System.out.println(username);
+        User user = userRepository.findByUsername(username).orElse(null);
+
+        if(user == null){
+            System.out.println("l");
+            redirectAttributes.addFlashAttribute("toastMessage", "An error occured");
+            redirectAttributes.addFlashAttribute("toastType", "fail");  // You can send 'success', 'error', etc.
+
+            String referer = request.getHeader("Referer");
+            return "redirect:" + referer;
+        }
+
+        user.setFName(firstName);
+        user.setLName(lastName);
+        user.setPersonalEmail(email);
+
+        userRepository.save(user);
+
+        redirectAttributes.addFlashAttribute("toastMessage", "New parent was invited");
+        redirectAttributes.addFlashAttribute("toastType", "success");  // You can send 'success', 'error', etc.
+
+        String referer = request.getHeader("Referer");
+        return "redirect:" + referer;
     }
 
     private void sendNotificationToAdmin(String type) {
