@@ -1,20 +1,8 @@
 
-body {
-    background-color: #f6523c; /* Setting the background color to a grey shade */
+.container-login{
+    height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-
-.containerl {
-    background-color: #ffffff; /* White background for the form */
-    padding: 10px;
-    padding-bottom: 100px;
-    border-radius: 8px;
-    margin-top: 50px;
-    margin-bottom: 35%;/* Adds some space at the top */
-    width: 50%;
-    align-content: center;
-    margin-left: 25%;
-    margin-bottom: 10%;
-    box-shadow: black;
-}
-
 

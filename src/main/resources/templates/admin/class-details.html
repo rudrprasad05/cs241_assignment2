@@ -40,7 +40,18 @@
         <div class="d-flex justify-content-between mb-3">
             <h3 class="mb-2">Attendance</h3>
         </div>
-        <p th:if="${sessions.isEmpty()}">No data available.</p>
+        <div class="no-data-box d-flex" th:if="${#lists.isEmpty(sessions.isEmpty())}"><p class="mx-auto my-auto">No data available</p></div>
+
+        <div class="d-flex justify-content-between mb-3">
+            <h3 class="mb-2">Reports</h3>
+            <form action="/redirect/generate-class-report" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <input type="hidden" name="subjectCode" th:value="${subject_code}"/>
+                <input type="hidden" name="subjectClassId" th:value="${subjectClass.getId()}"/>
+                <button class="btn btn-primary btn-sm">Generate Report</button>
+            </form>
+
+        </div>
 
         <div th:if="${!sessions.isEmpty()}" class="flex-grid-one-col">
             <div class="card" th:each="classSession : ${sessions}">

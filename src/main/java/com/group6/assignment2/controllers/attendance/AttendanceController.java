@@ -25,6 +25,10 @@ public class AttendanceController {
 
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     @Autowired
     private EnrollmentRepository enrollmentRepository;
@@ -37,22 +41,6 @@ public class AttendanceController {
 
     @Autowired
     private AttendanceRepository attendanceRepository;
-
-//    @PostMapping("/teacher/attendance/update")
-//    public String addClass(@RequestParam("attendanceId") String attendanceId, @RequestParam(value = "isPresent", required = false) boolean isPresent, @AuthenticationPrincipal UserDetails userDetails, HttpServletRequest request) {
-//        Attendance attendance = attendanceRepository.findByAttendanceId(attendanceId);
-//        if(isPresent) {
-//            attendance.setPresent(Attendance.AttendanceType.PRESENT);
-//        }
-//        else{
-//            attendance.setPresent(Attendance.AttendanceType.ABSENT);
-//        }
-//
-//        attendanceRepository.save(attendance);
-//
-//        String referer = request.getHeader("Referer");
-//        return "redirect:" + referer;
-//    }
 
     @PostMapping("/teacher/attendance/update")
     public String addClass(
@@ -67,6 +55,21 @@ public class AttendanceController {
 
         // Update the attendance status with the selected value
         attendance.setPresent(attendanceStatus);
+
+        Student student = attendance.getStudent();
+        List<Parent> studentParents = student.getParents();
+
+        String message = "Your child was marked as " + attendanceStatus;
+        String title = "Attention!";
+        Notification.NotificationType notificationType = Notification.NotificationType.WARNING;
+        User admin =  userRepository.findOneByRole(Role.ADMIN);
+
+        for (Parent parent : studentParents) {
+            System.out.println(parent.getParentId());
+            Notification notification = new Notification(message, title, notificationType, admin, parent);
+            notificationRepository.save(notification);
+            System.out.println("sent");
+        }
 
         // Save the updated attendance record
         attendanceRepository.save(attendance);
@@ -94,17 +97,31 @@ public class AttendanceController {
         // Update the attendance status with the selected value
         attendance.setPresent(attendanceStatus);
 
+        Student student = attendance.getStudent();
+        List<Parent> studentParents = student.getParents();
+
+        String message = "Your child was marked as " + attendanceStatus;
+        String title = "Attention!";
+        Notification.NotificationType notificationType = Notification.NotificationType.WARNING;
+        User admin =  userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+
+        for (Parent parent : studentParents) {
+            System.out.println(parent.getParentId());
+            Notification notification = new Notification(message, title, notificationType, admin, parent);
+            notificationRepository.save(notification);
+            System.out.println("sent");
+        }
+
+
         // Save the updated attendance record
         attendanceRepository.save(attendance);
 
         redirectAttributes.addFlashAttribute("toastMessage", "Attendance Updated Successfully");
         redirectAttributes.addFlashAttribute("toastType", "success");  // You can send 'success', 'error', etc.
 
-
         // Redirect back to the referring page
         String referer = request.getHeader("Referer");
-        return "redirect:/";
-//        return "redirect:" + referer;
+        return "redirect:" + referer;
     }
 
 

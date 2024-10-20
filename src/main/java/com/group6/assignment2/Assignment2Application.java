@@ -7,14 +7,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Assignment2Application {
 
 	public static void main(String[] args) {
-		MySQLConnectionTest mySQLConnectionTest = new MySQLConnectionTest();
-		if(mySQLConnectionTest.test()){
 			SpringApplication.run(Assignment2Application.class, args);
-		}
-		else{
-			System.out.println("Failed to connect to database. Check if mysql is running");
-			System.exit(0);
-		}
+
+//		MySQLConnectionTest mySQLConnectionTest = new MySQLConnectionTest();
+//		if(mySQLConnectionTest.test()){
+//			SpringApplication.run(Assignment2Application.class, args);
+//		}
+//		else{
+//			System.out.println("Failed to connect to database. Check if mysql is running");
+//			System.exit(0);
+//		}
 
 	}
 

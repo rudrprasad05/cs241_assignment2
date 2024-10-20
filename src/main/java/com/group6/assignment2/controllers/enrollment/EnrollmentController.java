@@ -45,7 +45,7 @@ public class EnrollmentController {
     {
 
         Student student = studentRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new IllegalArgumentException("User not found"));
-        Admin admin = adminRepository.findByUsername("admin");
+        Admin admin = adminRepository.findByUsername("admin").orElseThrow();
         SubjectClass subjectClass = subjectClassRepository.findByCode(subjectClassId);
         Subject subject = subjectClass.getSubject();
 

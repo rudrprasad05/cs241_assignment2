@@ -8,49 +8,66 @@
 <div th:fragment="main" class="">
 
     <div th:insert="fragments/toast :: toast(type=${toastType}, message=${toastMessage})"></div>
-    <p th:if="${classEnrollmentMap.isEmpty()}">No data available.</p>
+    <div class="no-data-box d-flex" th:if="${classEnrollmentMap.isEmpty()}"><p class="mx-auto my-auto">No data available</p></div>
 
-    <div th:each="entry : ${classEnrollmentMap}">
-        <div class="card-block">
-            <!-- Access SubjectClass via entry.key -->
-            <h4 class="card-title mt-3" th:text="${entry.key.getRoomCode()}"></h4>
-            <div class="meta" th:text="${entry.key.getDay()}"></div>
-            <div class="card-text" th:text="${entry.key.getPeriod().getTime()}"></div>
-            <a th:href="@{'/student/subjects/'+ ${entry.getKey().getSubject().getCode()} + '/' + ${entry.getKey().getId()}}" class="card-text" >View Class</a>
 
-            <div th:if="${entry.value == null}">
-                <!-- If no enrollment exists, show "Enroll" button -->
-                <form action="/student/enrollment/new" method="post">
+    <div th:if="${!classEnrollmentMap.isEmpty()}" class="flex-grid-one-col mt-3">
+        <div class="card ">
+            <div class="card-body grid-5-cols">
+                <span>Room Code</span>
+                <span>Day</span>
+                <span>Time</span>
+                <span>Status</span>
+                <span class="ms-auto text-right">Actions</span>
+            </div>
+        </div>
+
+        <div class="card" th:each="entry : ${classEnrollmentMap}">
+            <div class="card-body grid-5-cols">
+                <span th:text="${entry.key.getRoomCode()}"></span>
+                <span th:text="${entry.key.getDay()}"></span>
+                <span th:text="${entry.key.getPeriod().getTime()}"></span>
+
+                <div th:if="${entry.value == null}">
+                    <!-- If no enrollment exists, show "Enroll" button -->
+                    <form action="/student/enrollment/new" method="post">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <input type="hidden" name="subjectClassId" th:value="${entry.key.getId()}"/>
+                        <!--                    <input type="hidden" name="subjectCode" th:value="${entry.key.getSubject().getCode()}"/>-->
+                        <button type="submit" class="btn btn-secondary float-right btn-sm">Enroll</button>
+                    </form>
+                </div>
+
+                <div th:if="${entry.value != null}">
+                    <button type="button" class="btn btn-success float-right btn-sm"
+                            th:if="${entry.value.isAccepted().toString() == 'ACCEPTED'}" disabled>Enrolled</button>
+                    <button type="button" class="btn btn-warning float-right btn-sm"
+                            th:if="${entry.value.isAccepted().toString() == 'PENDING'}" disabled>Pending</button>
+                </div>
+
+                <a class="ms-auto text-right" th:href="@{'/student/subjects/'+ ${entry.getKey().getSubject().getCode()} + '/' + ${entry.getKey().getId()}}">View Class</a>
+
+                <span class="text-success" th:if="${attendance.isPresent().toString() == 'PRESENT'}">Present</span>
+                <span class="text-danger" th:if="${attendance.isPresent().toString() == 'ABSENT'}">Absent</span>
+                <span class="text-success" th:if="${attendance.isPresent().toString() == 'LATE'}">Late</span>
+                <span class="text-warning" th:if="${attendance.isPresent().toString() == 'EXCUSED'}">Excused</span>
+                <span class="text-muted" th:if="${attendance.isPresent().toString() == 'NOT_MARKED'}">Not marked</span>
+
+                <form method="post" action="/admin/attendance/update">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                    <input type="hidden" name="subjectClassId" th:value="${entry.key.getId()}"/>
-<!--                    <input type="hidden" name="subjectCode" th:value="${entry.key.getSubject().getCode()}"/>-->
-                    <button type="submit" class="btn btn-secondary float-right btn-sm">Enroll</button>
+                    <input type="hidden" name="attendanceId" th:value="${attendance.getId()}"/>
+
+                    <div class="form-group d-flex gap-3">
+                        <select name="attendanceStatus" id="attendanceStatus" class="form-control">
+                            <option  th:each="attendanceType : ${attendanceTypeList}" th:value="${attendanceType}" th:selected="${attendanceType == attendance.isPresent()}" th:text="${attendanceType.toString()}"></option>
+                        </select>
+                        <button class="btn btn-secondary btn-sm">Save</button>
+                    </div>
                 </form>
-            </div>
 
-            <div th:if="${entry.value != null}">
-                <button type="button" class="btn btn-success float-right btn-sm"
-                        th:if="${entry.value.isAccepted().toString() == 'ACCEPTED'}" disabled>Enrolled</button>
-                <button type="button" class="btn btn-warning float-right btn-sm"
-                        th:if="${entry.value.isAccepted().toString() == 'PENDING'}" disabled>Pending</button>
             </div>
         </div>
     </div>
-
-
-<!--                <th:block th:replace="modals/newEnrollmentModal :: modal(classId=${class.getId()})">modal</th:block>-->
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-
-
-
-
 </div>
 
 </body>

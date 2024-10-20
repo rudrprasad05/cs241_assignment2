@@ -33,8 +33,19 @@
             </div>
         </section>
     </div>
+    <div class="mt-3">
+        <div class="d-flex justify-content-between mb-3">
+            <h3 class="mb-2">Reports</h3>
+            <form action="/admin/generate-report" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <input type="hidden" name="subjectCode" th:value="${subject_code}"/>
+                <button class="btn btn-primary btn-sm">Generate Report</button>
+            </form>
+
+        </div>
+    </div>
     <div>
-        <p th:if="${subjectClass.isEmpty()}">No data available.</p>
+        <div class="no-data-box d-flex" th:if="${#lists.isEmpty(subjectClass.isEmpty())}"><p class="mx-auto my-auto">No data available</p></div>
 
         <section class="my-4">
             <div class="d-flex justify-content-between mb-3">
@@ -121,6 +132,8 @@
             </div>
         </div>
     </div>
+
+
 
 </div>
 

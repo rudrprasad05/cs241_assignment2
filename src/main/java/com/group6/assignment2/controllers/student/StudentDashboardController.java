@@ -56,11 +56,21 @@ public class StudentDashboardController {
         // Get the authenticated user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        Student student = studentRepository.findByEmail(username);
+        Student student = studentRepository.findByUsername(username).orElseThrow(null);
+
+        if(student == null) {
+            return "redirect:/student/dashboard";
+        }
+
+        List<Subject> enrolledSubjects = student.getEnrollments().stream()
+                .filter(e -> e.isAccepted() == Enrollment.EnrollmentStatus.ACCEPTED)
+                .map(Enrollment::getSubject)
+                .toList();
 
         sideNavLinks = Link.addLinks("student");
 
         model.addAttribute("sideNavLinks", sideNavLinks);
+        model.addAttribute("enrolledSubjects", enrolledSubjects);
         model.addAttribute("pageTitle", "User Dashboard");
 
         return "student/dashboard";

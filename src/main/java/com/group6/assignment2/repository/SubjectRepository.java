@@ -27,4 +27,5 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
     @Query(value = "SELECT * FROM subject WHERE teacher_id = :teacherId", nativeQuery = true)
     List<Subject> findByTeacher(@Param("teacherId") Long teacherId);
 
+
 }
